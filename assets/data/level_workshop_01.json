@@ -1,0 +1,100 @@
+{
+  "name": "Workbench Run",
+  "spawn": [0, 0.2, 4],
+  "palette": {
+    "oak": "#c98f4e",
+    "maple": "#e0b36b",
+    "walnut": "#7d5233",
+    "red": "#d9483b",
+    "blue": "#3a7bd5",
+    "green": "#4caf6a",
+    "yellow": "#f2c230",
+    "steel": "#8b9aa8",
+    "pink": "#e87aa4",
+    "graphite": "#3a3d42",
+    "cream": "#f4e8cf",
+    "room_wall": "#6e5a47",
+    "room_floor": "#44352a"
+  },
+  "platforms": [
+    { "center": [0, -1, -11], "size": [12, 2, 38], "color": "oak" },
+    { "center": [0, -1, -43], "size": [10, 2, 18], "color": "maple" },
+    { "center": [3.2, 1, -47], "size": [3, 2, 3], "color": "blue" },
+    { "center": [0, -1, -71.5], "size": [10, 2, 17], "color": "oak" },
+    { "center": [0, 2.5, -88], "size": [8, 6, 16], "color": "walnut" },
+    { "center": [2, 3.5, -100], "size": [3, 2, 3], "color": "red" },
+    { "center": [-2, 2.5, -105], "size": [3, 2, 3], "color": "blue" },
+    { "center": [2, 1.5, -110], "size": [3, 2, 3], "color": "green" },
+    { "center": [-2, 0.5, -115], "size": [3, 2, 3], "color": "yellow" },
+    { "center": [0, -0.5, -120], "size": [3, 2, 3], "color": "red" },
+    { "center": [0, -1, -142], "size": [14, 2, 36], "color": "maple" },
+    { "center": [0, 0.5, -154], "size": [4, 1, 4], "color": "yellow" }
+  ],
+  "moving_platforms": [
+    { "a": [0, -0.3, -54.5], "b": [0, -0.3, -60.5], "size": [4, 0.6, 4], "speed": 2.5, "color": "steel" }
+  ],
+  "blocks": [
+    { "pos": [-2, 2.7, -14], "kind": "cog" },
+    { "pos": [0, 2.7, -14], "kind": "coil" },
+    { "pos": [2, 2.7, -14], "kind": "crate" },
+    { "pos": [0, 2.7, -40], "kind": "life", "hidden": true },
+    { "pos": [-1, 8.2, -86], "kind": "coil" },
+    { "pos": [1, 8.2, -86], "kind": "cog" },
+    { "pos": [-3, 2.7, -134], "kind": "cog" },
+    { "pos": [-1, 2.7, -134], "kind": "crate" },
+    { "pos": [1, 2.7, -134], "kind": "cog" },
+    { "pos": [3, 2.7, -134], "kind": "crate" },
+    { "pos": [5, 2.7, -146], "kind": "cog", "hidden": true }
+  ],
+  "beetles": [
+    { "a": [-4, 0, -22], "b": [4, 0, -22], "speed": 2.5 },
+    { "a": [-3, 0, -41], "b": [3, 0, -41], "speed": 2.5 },
+    { "a": [3, 0, -50.5], "b": [-3, 0, -50.5], "speed": 3.0 },
+    { "a": [-3, 0, -72], "b": [3, 0, -72], "speed": 3.0 },
+    { "a": [-2.5, 5.5, -84], "b": [-2.5, 5.5, -93], "speed": 3.0 },
+    { "a": [2.5, 5.5, -93], "b": [2.5, 5.5, -84], "speed": 3.0 },
+    { "a": [-5, 0, -130], "b": [5, 0, -130], "speed": 3.0 },
+    { "a": [-5, 0, -140], "b": [5, 0, -140], "speed": 3.5 },
+    { "a": [5, 0, -148], "b": [-5, 0, -148], "speed": 3.5 }
+  ],
+  "cog_lines": [
+    { "from": [0, 1, -4], "to": [0, 1, -10], "count": 4 },
+    { "from": [-3, 1, -26], "to": [3, 1, -26], "count": 4 },
+    { "from": [-3, 1, -36], "to": [3, 1, -36], "count": 4 },
+    { "from": [3.2, 3, -46], "to": [3.2, 3, -48], "count": 3 },
+    { "from": [0, 1.5, -56], "to": [0, 1.5, -60], "count": 3 },
+    { "from": [-3, 1, -68], "to": [3, 1, -68], "count": 4 },
+    { "from": [0, 6.5, -82], "to": [0, 6.5, -94], "count": 6 },
+    { "from": [-5, 1, -126], "to": [5, 1, -126], "count": 5 },
+    { "from": [0, 1, -136], "to": [0, 1, -151], "count": 6 }
+  ],
+  "cogs": [
+    [0, 2.5, -30.5], [0, 3.4, -32], [0, 2.5, -33.5],
+    [0, 5, -76], [0, 7, -76],
+    [2, 5.5, -100], [-2, 4.5, -105], [2, 3.5, -110], [-2, 2.5, -115], [0, 1.5, -120]
+  ],
+  "springs": [
+    { "pos": [0, 0, -76] }
+  ],
+  "checkpoints": [
+    { "pos": [-3.5, 0, -66], "respawn": [0, 0.2, -66] },
+    { "pos": [-5, 0, -127], "respawn": [0, 0.2, -127] }
+  ],
+  "goal": { "pos": [0, 2.6, -154], "area_size": [5, 4, 5] },
+  "decor": [
+    { "type": "pencil", "pos": [-15, -8, -20], "rot": [20, 0, -12], "length": 34, "radius": 1.3, "color": "red" },
+    { "type": "pencil", "pos": [16, -9, -48], "rot": [-14, 0, 16], "length": 38, "radius": 1.4, "color": "blue" },
+    { "type": "pencil", "pos": [-17, -7, -92], "rot": [12, 0, 18], "length": 40, "radius": 1.5, "color": "green" },
+    { "type": "pencil", "pos": [18, -8, -136], "rot": [-18, 0, -10], "length": 36, "radius": 1.3, "color": "yellow" },
+    { "type": "box", "pos": [10.5, -5, -11], "size": [2, 2, 44], "color": "yellow" },
+    { "type": "box", "pos": [-22, -6, -60], "size": [10, 10, 10], "rot": [0, 25, 0], "color": "pink" },
+    { "type": "box", "pos": [26, -3, -95], "size": [14, 14, 14], "rot": [0, 40, 0], "color": "blue" },
+    { "type": "box", "pos": [-26, -2, -135], "size": [12, 12, 12], "rot": [0, 15, 0], "color": "red" },
+    { "type": "cylinder", "pos": [19, -8, -12], "radius": 6, "height": 12, "color": "cream" },
+    { "type": "cylinder", "pos": [-20, -9, -120], "radius": 7, "height": 10, "color": "steel" },
+    { "type": "box", "pos": [0, -24, -80], "size": [160, 2, 320], "color": "room_floor" },
+    { "type": "box", "pos": [0, 12, -215], "size": [160, 70, 2], "color": "room_wall" },
+    { "type": "box", "pos": [-65, 12, -80], "size": [2, 70, 300], "color": "room_wall" },
+    { "type": "box", "pos": [65, 12, -80], "size": [2, 70, 300], "color": "room_wall" }
+  ]
+}

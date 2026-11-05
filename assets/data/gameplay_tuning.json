@@ -1,0 +1,56 @@
+{
+  "player": {
+    "walk_speed": 7.0,
+    "run_speed": 11.0,
+    "ground_acceleration": 42.0,
+    "ground_deceleration": 52.0,
+    "air_acceleration": 24.0,
+    "turn_rate": 14.0,
+    "gravity_rise": 30.0,
+    "gravity_fall": 46.0,
+    "max_fall_speed": 30.0,
+    "jump_height_small": 3.6,
+    "jump_height_coiled": 4.6,
+    "jump_cut_multiplier": 0.45,
+    "coyote_seconds": 0.12,
+    "jump_buffer_seconds": 0.12,
+    "stomp_bounce_speed": 9.0,
+    "stomp_bounce_speed_held": 14.0,
+    "hurt_bounce_speed": 6.0,
+    "invulnerable_seconds": 1.5,
+    "capsule_radius": 0.35,
+    "capsule_height_small": 1.1,
+    "capsule_height_coiled": 1.5,
+    "kill_height": -14.0
+  },
+  "camera": {
+    "distance": 8.5,
+    "height_offset": 1.4,
+    "pitch_degrees": 18.0,
+    "pitch_min_degrees": -10.0,
+    "pitch_max_degrees": 60.0,
+    "mouse_sensitivity": 0.0035,
+    "stick_speed": 2.6,
+    "follow_rate": 9.0,
+    "title_orbit_speed": 0.12
+  },
+  "enemy": {
+    "stomp_margin": 0.35,
+    "hitbox_width": 1.4,
+    "hitbox_height": 1.0
+  },
+  "world": {
+    "spring_launch_speed": 21.0,
+    "block_reward_rise": 1.2
+  },
+  "run": {
+    "starting_lives": 3,
+    "level_seconds": 300,
+    "cogs_per_life": 40,
+    "score_per_cog": 100,
+    "score_per_stomp": 200,
+    "score_per_crate": 50,
+    "score_per_second_left": 10,
+    "respawn_delay_seconds": 1.1
+  }
+}
