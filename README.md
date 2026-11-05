@@ -4,7 +4,7 @@ An original 3D platformer made with Godot 4.7. Play as Tock, a tiny clockwork to
 
 ![Tock at the start of the Workbench Run course](docs/images/start_of_course.png)
 
-> **Status: early playable.** One complete level works from start to finish, with realistic materials and lighting. A new menu and finished gamepad support are in progress.
+> **Status: early playable.** One complete level works from start to finish, with realistic materials and lighting, a full menu and gamepad support. Four more levels, new enemies, a shooting power and a final boss are in progress.
 
 ## Play it
 
@@ -20,7 +20,7 @@ If `godot` isn't recognized, use the full path to the Godot executable instead. 
 
 ## Controls
 
-| Action | Keyboard and mouse | Gamepad (not yet tested) |
+| Action | Keyboard and mouse | Gamepad (tested with simulated input only) |
 |---|---|---|
 | Move | WASD or arrow keys | Left stick |
 | Jump (hold to jump higher) | Space | A |
@@ -48,7 +48,9 @@ This game was built with [Claude Code](https://claude.com/claude-code), on top o
 4. **Tested it.** Added 31 automated tests that run the real game with real physics, including a bot that finishes the whole course. Breaking the jump height on purpose made the bot fail, which confirms that test can catch an impossible level.
 5. **Tuned it for low-end hardware.** Measured frame rate on an Intel HD 520 and changed settings based on the results, reaching a steady 60 FPS on the title screen. Gameplay ran at about 90 FPS uncapped when measured, and is capped at 60.
 6. **Upgraded the visuals with the studio's specialists.** Used `find-skills` to find and install the `godot-shaders` and `godot-ui-control` skills, and added free [CC0 textures](assets/textures/texture_sources.md). The studio's art director wrote the [art bible](design/art/art-bible.md), and its technical artist rebuilt the materials, lighting and scenery from it. Merging meshes also made the game faster: the slowest spot measured went from about 57 FPS to about 80 FPS uncapped. Glow was cut because it cost too much on this hardware, and edges remain jagged because anti-aliasing is off.
-7. **Now in progress.** The studio's UI programmer is working on a new menu and finished gamepad support.
+7. **Rebuilt the menus and added gamepad support.** The studio's UI programmer added a cast-brass title over the live 3D scene, restyled the other screens and HUD, and made menus and play work with a controller. Those controller tests use simulated events, so a real controller is still unproven. There are now 58 automated tests.
+8. **Fixed a playtest bug.** Holding an arrow key made the 3-button menu spin so fast that it often stopped on the opposite button. Menus now stop at their ends, and one press moves one step.
+9. **Now in progress.** Four more levels, new enemies, a shooting power and a final boss.
 
 ## Project layout
 
@@ -75,9 +77,9 @@ The test run exits with 0 if everything passed, 1 on failures, 2 if no tests wer
 
 ## Roadmap
 
-- A more attractive menu
-- Tested gamepad support
-- More levels, music and a boss fight against Baron Rust
+- Testing on a real controller
+- Four more levels, new enemies, a shooting power and a boss fight against Baron Rust
+- Music
 - A standalone Windows build
 
 ## Credits and licenses
