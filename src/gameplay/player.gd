@@ -107,15 +107,9 @@ func setup(tuning: Tuning) -> void:
 	_model.rotation.y = FACING_COURSE_YAW
 	add_child(_model)
 
-	_shadow = MeshInstance3D.new()
-	_shadow.mesh = MeshKit.cylinder(0.45, 0.45, 0.01, 18)
-	var shadow_material := MeshKit.color_material(Color(0.0, 0.0, 0.0, 0.45))
-	shadow_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	shadow_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_shadow.material_override = shadow_material
-	_shadow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_shadow = MeshKit.blob(self, Look.num("readability", "blob", "radius"))
 	_shadow.top_level = true
-	add_child(_shadow)
+	add_child(Look.omni("follow", Vector3.UP * Look.num("lights", "follow", "height")))
 
 
 func is_coiled() -> bool:
@@ -275,6 +269,7 @@ func _update_shadow() -> void:
 	_shadow.visible = not hit.is_empty()
 	if _shadow.visible:
 		_shadow.global_position = (hit["position"] as Vector3) + Vector3.UP * SHADOW_LIFT
+		_shadow.scale = Vector3.ONE * Look.num("readability", "blob", "radius") * _model.scale.x
 
 
 func _apply_form() -> void:

@@ -9,13 +9,12 @@ signal thudded
 
 const KIND_CRATE := "crate"
 const SIZE := 1.0
-const TOY_COLOR := Color("23a8a3")
-const RIBBON_COLOR := Color("f2c230")
-const CRATE_COLOR := Color("b97a3f")
-const CRATE_FRAME_COLOR := Color("80512a")
-const USED_COLOR := Color("77706a")
+const LID_HEIGHT := 0.2
+const LID_Y := 0.41
 const BUMP_HEIGHT := 0.25
 const BUMP_SECONDS := 0.08
+
+static var _shared_meshes: Dictionary = {}
 
 var kind := ""
 var is_hidden_block := false
@@ -43,7 +42,7 @@ func setup(block_kind: String, hidden_block: bool, at: Vector3) -> void:
 	if kind == KIND_CRATE:
 		_build_crate()
 	else:
-		_build_toy_box(TOY_COLOR, true)
+		_build_toy_box("toy_box_body", true)
 
 
 ## Called when Tock's head hits this block.
@@ -95,22 +94,71 @@ func _wobble() -> void:
 func _show_used() -> void:
 	for child in _visual.get_children():
 		child.queue_free()
-	_build_toy_box(USED_COLOR, false)
+	_build_toy_box("toy_box_used", false)
 
 
-func _build_toy_box(color: Color, ribbon: bool) -> void:
-	MeshKit.part(_visual, MeshKit.box(Vector3.ONE * SIZE), color)
-	if not ribbon:
-		return
-	MeshKit.part(_visual, MeshKit.box(Vector3(1.02, 1.02, 0.2)), RIBBON_COLOR)
-	MeshKit.part(_visual, MeshKit.box(Vector3(0.2, 1.02, 1.02)), RIBBON_COLOR)
-	MeshKit.part(_visual, MeshKit.box(Vector3(1.02, 0.2, 1.02)), RIBBON_COLOR)
+## A lacquered gift box hanging on twine. Used boxes lose the ribbon, so color is not the only cue.
+func _build_toy_box(row: String, ribbon: bool) -> void:
+	_add_culled(_body_mesh(), row, true)
+	_add_culled(_trim_mesh(ribbon), "box_trim", false)
 
 
 func _build_crate() -> void:
-	MeshKit.part(_visual, MeshKit.box(Vector3.ONE * 0.94), CRATE_COLOR)
+	_add_culled(_crate_mesh(), "crate", true)
+	_add_culled(_trim_mesh(false), "box_trim", false)
+
+
+func _add_culled(mesh: Mesh, row: String, casts_shadow: bool) -> void:
+	var instance := MeshKit.part(_visual, mesh, row, Vector3.ZERO, casts_shadow)
+	instance.visibility_range_end = Look.num("readability", "block", "cull_distance")
+
+
+func _body_mesh() -> Mesh:
+	if not _shared_meshes.has("body"):
+		_shared_meshes["body"] = MeshKit.box(Vector3.ONE * SIZE)
+	return _shared_meshes["body"]
+
+
+## Mesh-local UVs, because the crate bumps and world UVs would swim.
+func _crate_mesh() -> Mesh:
+	if _shared_meshes.has("crate"):
+		return _shared_meshes["crate"]
+	var uv := Look.uv_per_unit("crate")
+	var frame_shade := Look.color("scenery", "toy_box", "crate_frame_shade")
+	var batch := MeshBatch.new()
+	batch.add_box(Vector3.ZERO, Vector3.ONE * 0.94, uv)
 	for x: float in [-0.45, 0.45]:
 		for y: float in [-0.45, 0.45]:
-			MeshKit.part(_visual, MeshKit.box(Vector3(0.12, 0.12, 1.02)), CRATE_FRAME_COLOR, Vector3(x, y, 0.0))
-			MeshKit.part(_visual, MeshKit.box(Vector3(1.02, 0.12, 0.12)), CRATE_FRAME_COLOR, Vector3(0.0, x, y))
-			MeshKit.part(_visual, MeshKit.box(Vector3(0.12, 1.02, 0.12)), CRATE_FRAME_COLOR, Vector3(x, 0.0, y))
+			batch.add_box(Vector3(x, y, 0.0), Vector3(0.12, 0.12, 1.02), uv, Vector2.ZERO, frame_shade)
+			batch.add_box(Vector3(0.0, x, y), Vector3(1.02, 0.12, 0.12), uv, Vector2.ZERO, frame_shade)
+			batch.add_box(Vector3(x, 0.0, y), Vector3(0.12, 1.02, 0.12), uv, Vector2.ZERO, frame_shade, true)
+	_shared_meshes["crate"] = batch.commit()
+	return _shared_meshes["crate"]
+
+
+## Twine up to the ceiling batten, merged with the ribbon if there is one. The block's height
+## sets the twine length, so the mesh is shared per height.
+func _trim_mesh(ribbon: bool) -> Mesh:
+	var key := "trim_%s_%s_%.2f" % [ribbon, kind == KIND_CRATE, position.y]
+	if _shared_meshes.has(key):
+		return _shared_meshes[key]
+	var batch := MeshBatch.new()
+	var top := Look.num("scenery", "twine", "top_y") - position.y
+	var twine := Look.color("scenery", "toy_box", "twine")
+	batch.add_bar(Vector3.UP * SIZE * 0.5, Vector3.UP * top, Look.num("scenery", "twine", "radius"), twine, 4)
+	if kind == KIND_CRATE:
+		_shared_meshes[key] = batch.commit()
+		return _shared_meshes[key]
+	if ribbon:
+		var cream := Look.color("scenery", "toy_box", "ribbon")
+		batch.add_box(Vector3.ZERO, Vector3(1.02, 1.02, 0.2), 0.0, Vector2.ZERO, cream)
+		batch.add_box(Vector3.ZERO, Vector3(0.2, 1.02, 1.02), 0.0, Vector2.ZERO, cream)
+	# A lid band breaks up the flat faces, and gives form where the lamp hits a side evenly.
+	var lid := Look.color("scenery", "toy_box", "lid" if ribbon else "used_lid")
+	batch.add_box(Vector3.UP * LID_Y, Vector3(1.03, LID_HEIGHT, 1.03), 0.0, Vector2.ZERO, lid)
+	if ribbon:
+		var cream := Look.color("scenery", "toy_box", "ribbon")
+		batch.add_box(Vector3.UP * LID_Y, Vector3(1.05, LID_HEIGHT, 0.2), 0.0, Vector2.ZERO, cream)
+		batch.add_box(Vector3.UP * LID_Y, Vector3(0.2, LID_HEIGHT, 1.05), 0.0, Vector2.ZERO, cream)
+	_shared_meshes[key] = batch.commit()
+	return _shared_meshes[key]

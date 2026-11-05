@@ -26,22 +26,21 @@ var blocks: Array[SurpriseBlock] = []
 var moving_platforms: Array[CourseObjects.MovingPlatform] = []
 var checkpoints: Array[CourseObjects.Checkpoint] = []
 
-var _palette: Dictionary = {}
 var _tuning: Tuning
 
 
 ## Builds everything from parsed level data. Call before adding to the tree.
 func build(data: Dictionary, tuning: Tuning) -> void:
 	_tuning = tuning
-	for key: String in (data["palette"] as Dictionary):
-		_palette[key] = Color.html(data["palette"][key])
+	var palette: Dictionary = data["palette"]
 	spawn_point = _vec(data["spawn"])
 	_build_environment()
 	for entry: Dictionary in data["platforms"]:
-		_add_platform(_vec(entry["center"]), _vec(entry["size"]), _color(entry["color"]))
+		_add_platform(_vec(entry["center"]), _vec(entry["size"]))
+	CourseDressing.build(self, data, palette)
 	for entry: Dictionary in data["moving_platforms"]:
 		var platform := CourseObjects.MovingPlatform.new()
-		platform.setup(_vec(entry["a"]), _vec(entry["b"]), _vec(entry["size"]), entry["speed"], _color(entry["color"]))
+		platform.setup(_vec(entry["a"]), _vec(entry["b"]), _vec(entry["size"]), entry["speed"], palette[entry["color"]])
 		moving_platforms.append(platform)
 		add_child(platform)
 	for entry: Dictionary in data["blocks"]:
@@ -67,8 +66,7 @@ func build(data: Dictionary, tuning: Tuning) -> void:
 	goal.setup(_vec(data["goal"]["pos"]), _vec(data["goal"]["area_size"]))
 	goal.reached.connect(goal_reached.emit)
 	add_child(goal)
-	for entry: Dictionary in data["decor"]:
-		_add_decor(entry)
+	WorkshopScenery.build(self, data["decor"])
 
 
 ## Removes every enemy; used to test the course geometry on its own.
@@ -79,35 +77,13 @@ func remove_enemies() -> void:
 
 
 func _build_environment() -> void:
-	var sky_material := ProceduralSkyMaterial.new()
-	sky_material.sky_top_color = Color("8ec9ee")
-	sky_material.sky_horizon_color = Color("fbe6c4")
-	sky_material.ground_bottom_color = Color("6b4a2e")
-	sky_material.ground_horizon_color = Color("fbe6c4")
-	var sky := Sky.new()
-	sky.sky_material = sky_material
-	var environment := Environment.new()
-	environment.background_mode = Environment.BG_SKY
-	environment.sky = sky
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color("fff1dc")
-	environment.ambient_light_energy = 0.42
-	environment.tonemap_mode = Environment.TONE_MAPPER_LINEAR
 	var world_environment := WorldEnvironment.new()
-	world_environment.environment = environment
+	world_environment.environment = Look.environment()
 	add_child(world_environment)
-
-	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-58.0, -32.0, 0.0)
-	sun.light_color = Color("fff4e0")
-	sun.light_energy = 0.72
-	sun.shadow_enabled = true
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
-	sun.directional_shadow_max_distance = 45.0
-	add_child(sun)
+	Look.build_lights(self)
 
 
-func _add_platform(center: Vector3, size: Vector3, color: Color) -> void:
+func _add_platform(center: Vector3, size: Vector3) -> void:
 	var body := StaticBody3D.new()
 	body.position = center
 	body.collision_layer = Player.LAYER_WORLD
@@ -117,10 +93,6 @@ func _add_platform(center: Vector3, size: Vector3, color: Color) -> void:
 	var collider := CollisionShape3D.new()
 	collider.shape = shape
 	body.add_child(collider)
-	var visual := MeshInstance3D.new()
-	visual.mesh = MeshKit.box(size)
-	visual.material_override = MeshKit.plank_material(color)
-	body.add_child(visual)
 	add_child(body)
 
 
@@ -192,7 +164,8 @@ func _on_reward_released(kind: String, at: Vector3) -> void:
 func _pop_cog(at: Vector3) -> void:
 	var cog := MeshInstance3D.new()
 	cog.mesh = MeshKit.cog_mesh()
-	cog.material_override = MeshKit.color_material(Pickup.BRASS, 0.15, 0.4)
+	cog.material_override = Look.material("cog")
+	cog.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	cog.position = at
 	add_child(cog)
 	var tween := cog.create_tween()
@@ -206,36 +179,6 @@ func _floor_below(at: Vector3) -> float:
 	var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 40.0, Player.LAYER_WORLD)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	return (hit["position"] as Vector3).y if not hit.is_empty() else at.y - 2.0
-
-
-func _add_decor(entry: Dictionary) -> void:
-	var color := _color(entry["color"])
-	var root := Node3D.new()
-	root.position = _vec(entry["pos"])
-	if entry.has("rot"):
-		root.rotation_degrees = _vec(entry["rot"])
-	add_child(root)
-	match String(entry["type"]):
-		"box":
-			var visual := MeshInstance3D.new()
-			visual.mesh = MeshKit.box(_vec(entry["size"]))
-			visual.material_override = MeshKit.plank_material(color)
-			root.add_child(visual)
-		"cylinder":
-			MeshKit.part(root, MeshKit.cylinder(entry["radius"], entry["radius"], entry["height"], 24), color)
-		"pencil":
-			_build_pencil(root, entry["length"], entry["radius"], color)
-
-
-func _build_pencil(root: Node3D, length: float, radius: float, color: Color) -> void:
-	var tip_length := radius * 2.5
-	MeshKit.part(root, MeshKit.cylinder(radius, radius, length, 6), color)
-	MeshKit.part(root, MeshKit.cylinder(radius, radius * 0.25, tip_length, 6), Color("e8c79a"), Vector3(0.0, -length * 0.5 - tip_length * 0.5, 0.0))
-	MeshKit.part(root, MeshKit.cylinder(radius * 1.02, radius * 1.02, radius, 12), Color("e87aa4"), Vector3(0.0, length * 0.5 + radius * 0.5, 0.0))
-
-
-func _color(key: String) -> Color:
-	return _palette.get(key, Color.MAGENTA)
 
 
 func _vec(values: Array) -> Vector3:

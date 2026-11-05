@@ -1,43 +1,28 @@
 class_name MeshKit
 extends RefCounted
-## Builds the game's low-poly look from primitive meshes, with no imported art.
+## Primitive meshes and shared part helpers. Materials come from Look, so parts with
+## the same look share one material.
 
-static var _plank_texture: ImageTexture
 static var _cog_mesh: ArrayMesh
+static var _key_meshes: Dictionary = {}
+static var _blob_mesh: ArrayMesh
 
 
-## Plain material. Usage: MeshKit.color_material(Color.RED, 0.8, 0.3)
-static func color_material(color: Color, metallic := 0.0, roughness := 0.7) -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
-	material.albedo_color = color
-	material.metallic = metallic
-	material.roughness = roughness
-	return material
-
-
-## Colored material with plank lines fixed in world space, which helps players judge speed and distance.
-static func plank_material(color: Color) -> StandardMaterial3D:
-	var material := color_material(color)
-	material.albedo_texture = _get_plank_texture()
-	material.uv1_triplanar = true
-	material.uv1_world_triplanar = true
-	material.uv1_scale = Vector3.ONE * 0.25
-	return material
-
-
-## Adds a mesh to parent. Usage: MeshKit.part(self, BoxMesh.new(), Color.RED, Vector3.UP)
+## Adds a mesh to parent, using a shared material row from Look.
+## Usage: MeshKit.part(self, MeshKit.box(Vector3.ONE), "steel_trim", Vector3.UP)
 static func part(
 	parent: Node3D,
 	mesh: Mesh,
-	color: Color,
+	row: String,
 	offset := Vector3.ZERO,
-	metallic := 0.0,
-	roughness := 0.7
+	casts_shadow := true
 ) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
 	instance.mesh = mesh
-	instance.material_override = color_material(color, metallic, roughness)
+	instance.material_override = Look.material(row)
 	instance.position = offset
+	if not casts_shadow:
+		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(instance)
 	return instance
 
@@ -89,50 +74,54 @@ static func torus(inner_radius: float, outer_radius: float) -> TorusMesh:
 static func cog_mesh() -> ArrayMesh:
 	if _cog_mesh != null:
 		return _cog_mesh
-	var tool := SurfaceTool.new()
-	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var disc_transform := Transform3D(Basis(Vector3.RIGHT, PI / 2.0), Vector3.ZERO)
-	tool.append_from(cylinder(0.3, 0.3, 0.14, 14), 0, disc_transform)
+	var batch := MeshBatch.new()
+	batch.add_mesh(cylinder(0.3, 0.3, 0.14, 14), Transform3D(Basis(Vector3.RIGHT, PI / 2.0), Vector3.ZERO))
 	var tooth := box(Vector3(0.14, 0.14, 0.14))
 	var teeth := 8
 	for i in teeth:
-		var angle := TAU * i / teeth
-		var basis := Basis(Vector3.FORWARD, angle)
-		var tooth_position := basis * Vector3(0.34, 0.0, 0.0)
-		tool.append_from(tooth, 0, Transform3D(basis, tooth_position))
-	_cog_mesh = tool.commit()
+		var basis := Basis(Vector3.FORWARD, TAU * i / teeth)
+		batch.add_mesh(tooth, Transform3D(basis, basis * Vector3(0.34, 0.0, 0.0)))
+	_cog_mesh = batch.commit()
 	return _cog_mesh
 
 
-## Adds a wind-up key to parent. Its shaft runs along Z and its bow is at +Z.
-static func windup_key(parent: Node3D, color: Color, size := 1.0) -> Node3D:
+## Soft dark landing blob of radius 1, facing up, drawn with the "soft_shadow" row.
+static func blob_mesh() -> ArrayMesh:
+	if _blob_mesh != null:
+		return _blob_mesh
+	var batch := MeshBatch.new()
+	batch.add_soft_disc(Vector3.ZERO, Vector2.ONE, Look.num("readability", "blob", "opacity"))
+	_blob_mesh = batch.commit()
+	return _blob_mesh
+
+
+## Adds a soft landing blob to parent. The caller positions it just above the surface.
+static func blob(parent: Node3D, radius: float) -> MeshInstance3D:
+	var instance := part(parent, blob_mesh(), "soft_shadow", Vector3.ZERO, false)
+	instance.scale = Vector3.ONE * radius
+	return instance
+
+
+## Adds a wind-up key to parent as one merged mesh. Its shaft runs along Z and its bow is at +Z.
+static func windup_key(parent: Node3D, row: String, size := 1.0, casts_shadow := true) -> Node3D:
 	var key := Node3D.new()
 	parent.add_child(key)
-	var shaft := part(key, cylinder(0.06 * size, 0.06 * size, 0.5 * size, 8), color, Vector3.ZERO, 0.8, 0.3)
-	shaft.rotation.x = PI / 2.0
-	for side: float in [-1.0, 1.0]:
-		part(
-			key,
-			torus(0.09 * size, 0.2 * size),
-			color,
-			Vector3(side * 0.2 * size, 0.0, 0.25 * size),
-			0.8,
-			0.3
-		)
+	part(key, _key_mesh(size), row, Vector3.ZERO, casts_shadow)
 	return key
 
 
-static func _get_plank_texture() -> ImageTexture:
-	if _plank_texture != null:
-		return _plank_texture
-	var image := Image.create_empty(64, 64, false, Image.FORMAT_RGB8)
-	for y in 64:
-		for x in 64:
-			var shade := 0.93 + 0.07 * sin(float(y) * 0.9 + sin(float(x) * 0.13) * 2.0)
-			var offset_x := 0 if y < 32 else 32
-			if y % 32 < 2 or (x + offset_x) % 64 < 2:
-				shade = 0.62
-			image.set_pixel(x, y, Color(shade, shade, shade))
-	image.generate_mipmaps()
-	_plank_texture = ImageTexture.create_from_image(image)
-	return _plank_texture
+static func _key_mesh(size: float) -> ArrayMesh:
+	if _key_meshes.has(size):
+		return _key_meshes[size]
+	var batch := MeshBatch.new()
+	batch.add_mesh(
+		cylinder(0.06 * size, 0.06 * size, 0.5 * size, 8),
+		Transform3D(Basis(Vector3.RIGHT, PI / 2.0), Vector3.ZERO)
+	)
+	for side: float in [-1.0, 1.0]:
+		batch.add_mesh(
+			torus(0.09 * size, 0.2 * size),
+			Transform3D(Basis.IDENTITY, Vector3(side * 0.2 * size, 0.0, 0.25 * size))
+		)
+	_key_meshes[size] = batch.commit()
+	return _key_meshes[size]

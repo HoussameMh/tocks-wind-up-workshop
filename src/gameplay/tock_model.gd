@@ -2,11 +2,8 @@ class_name TockModel
 extends Node3D
 ## Tock's look and procedural animation. Feet are at y = 0 and the model faces +Z.
 
-const BRASS := Color("d8a93f")
-const TEAL := Color("1f9e9a")
-const CAP_RED := Color("d43f35")
-const SKIN := Color("f0c98d")
-const DARK := Color("26282c")
+const EYE_WHITE := Color("f5f1e6")
+const EYE_DARK := Color("15161a")
 
 const LEG_SWING := 0.9
 const ARM_SWING := 0.75
@@ -14,6 +11,8 @@ const STRIDE_RATE := 15.0
 const KEY_SPIN_IDLE := 1.5
 const KEY_SPIN_RUN := 14.0
 const GROW_RATE := 10.0
+
+static var _meshes: Dictionary = {}
 
 var _left_leg: Node3D
 var _right_leg: Node3D
@@ -29,13 +28,17 @@ var _coiled_scale := 1.0
 ## coiled_scale is how much larger the coiled form is than the small one.
 func _init(coiled_scale: float) -> void:
 	_coiled_scale = coiled_scale
-	_build_body()
-	_build_head()
-	_left_leg = _build_limb(Vector3(-0.12, 0.34, 0.0), 0.1, 0.3, DARK)
-	_right_leg = _build_limb(Vector3(0.12, 0.34, 0.0), 0.1, 0.3, DARK)
-	_left_arm = _build_limb(Vector3(-0.3, 0.68, 0.0), 0.075, 0.32, BRASS)
-	_right_arm = _build_limb(Vector3(0.3, 0.68, 0.0), 0.075, 0.32, BRASS)
-	_key = MeshKit.windup_key(self, BRASS, 0.8)
+	_bake_meshes()
+	MeshKit.part(self, _meshes["overalls"], "tock_overalls", Vector3(0.0, 0.53, 0.0))
+	MeshKit.part(self, _meshes["plate"], "tock_brass", Vector3(0.0, 0.6, 0.23), false)
+	MeshKit.part(self, _meshes["head"], "tock_head", Vector3(0.0, 0.92, 0.0))
+	MeshKit.part(self, _meshes["cap"], "tock_cap")
+	MeshKit.part(self, _meshes["eyes"], "tock_eyes", Vector3.ZERO, false)
+	_left_leg = _build_limb(Vector3(-0.12, 0.34, 0.0), _meshes["leg"], "tock_legs")
+	_right_leg = _build_limb(Vector3(0.12, 0.34, 0.0), _meshes["leg"], "tock_legs")
+	_left_arm = _build_limb(Vector3(-0.3, 0.68, 0.0), _meshes["arm"], "tock_brass")
+	_right_arm = _build_limb(Vector3(0.3, 0.68, 0.0), _meshes["arm"], "tock_brass")
+	_key = MeshKit.windup_key(self, "tock_brass", 0.8, false)
 	_key.position = Vector3(0.0, 0.55, -0.42)
 	_key.rotation.y = PI
 	_build_springs()
@@ -74,33 +77,56 @@ func animate(delta: float, speed_ratio: float, grounded: bool, velocity_y: float
 		_right_arm.rotation.x = air_pose
 
 
-func _build_body() -> void:
-	MeshKit.part(self, MeshKit.capsule(0.25, 0.62), TEAL, Vector3(0.0, 0.53, 0.0))
-	MeshKit.part(self, MeshKit.box(Vector3(0.28, 0.2, 0.06)), BRASS, Vector3(0.0, 0.6, 0.23), 0.7, 0.35)
-	MeshKit.part(self, MeshKit.sphere(0.035, 8), DARK, Vector3(-0.07, 0.6, 0.27))
-	MeshKit.part(self, MeshKit.sphere(0.035, 8), DARK, Vector3(0.07, 0.6, 0.27))
+## Builds the shared meshes once. Parts with the same material are merged, so Tock costs
+## at most 11 draw calls: five body parts, four limbs, the key and the coiled form's springs.
+static func _bake_meshes() -> void:
+	if not _meshes.is_empty():
+		return
+	_meshes["overalls"] = MeshKit.capsule(0.25, 0.62)
+	_meshes["plate"] = MeshKit.box(Vector3(0.28, 0.2, 0.06))
+	_meshes["head"] = MeshKit.sphere(0.23)
+	_meshes["leg"] = _limb_mesh(0.1, 0.3)
+	_meshes["arm"] = _limb_mesh(0.075, 0.32)
 
+	var cap_dome := SphereMesh.new()
+	cap_dome.radius = 0.25
+	cap_dome.height = 0.25
+	cap_dome.is_hemisphere = true
+	cap_dome.radial_segments = 16
+	cap_dome.rings = 6
+	var cap := MeshBatch.new()
+	cap.add_mesh(cap_dome, Transform3D(Basis.IDENTITY, Vector3(0.0, 0.98, 0.0)))
+	cap.add_box(Vector3(0.0, 0.98, 0.22), Vector3(0.3, 0.04, 0.2))
+	_meshes["cap"] = cap.commit()
 
-func _build_head() -> void:
-	MeshKit.part(self, MeshKit.sphere(0.23), SKIN, Vector3(0.0, 0.92, 0.0))
-	var cap := SphereMesh.new()
-	cap.radius = 0.25
-	cap.height = 0.25
-	cap.is_hemisphere = true
-	cap.radial_segments = 16
-	cap.rings = 6
-	MeshKit.part(self, cap, CAP_RED, Vector3(0.0, 0.98, 0.0))
-	MeshKit.part(self, MeshKit.box(Vector3(0.3, 0.04, 0.2)), CAP_RED, Vector3(0.0, 0.98, 0.22))
+	var eyes := MeshBatch.new()
+	var button := MeshKit.sphere(0.035, 8)
+	var white := MeshKit.sphere(0.055, 8)
+	var pupil := MeshKit.sphere(0.03, 8)
 	for side: float in [-1.0, 1.0]:
-		MeshKit.part(self, MeshKit.sphere(0.055, 8), Color.WHITE, Vector3(side * 0.09, 0.9, 0.19))
-		MeshKit.part(self, MeshKit.sphere(0.03, 8), DARK, Vector3(side * 0.09, 0.9, 0.235))
+		eyes.add_mesh(button, Transform3D(Basis.IDENTITY, Vector3(side * 0.07, 0.6, 0.27)), EYE_DARK)
+		eyes.add_mesh(white, Transform3D(Basis.IDENTITY, Vector3(side * 0.09, 0.9, 0.19)), EYE_WHITE)
+		eyes.add_mesh(pupil, Transform3D(Basis.IDENTITY, Vector3(side * 0.09, 0.9, 0.235)), EYE_DARK)
+	_meshes["eyes"] = eyes.commit()
+
+	var springs := MeshBatch.new()
+	var ring := MeshKit.torus(0.24, 0.31)
+	for i in 3:
+		springs.add_mesh(ring, Transform3D(Basis.IDENTITY, Vector3(0.0, 0.34 + i * 0.13, 0.0)))
+	_meshes["springs"] = springs.commit()
 
 
-func _build_limb(pivot_position: Vector3, radius: float, length: float, color: Color) -> Node3D:
+static func _limb_mesh(radius: float, length: float) -> ArrayMesh:
+	var batch := MeshBatch.new()
+	batch.add_mesh(MeshKit.capsule(radius, length), Transform3D(Basis.IDENTITY, Vector3(0.0, -length * 0.5, 0.0)))
+	return batch.commit()
+
+
+func _build_limb(pivot_position: Vector3, mesh: Mesh, row: String) -> Node3D:
 	var pivot := Node3D.new()
 	pivot.position = pivot_position
 	add_child(pivot)
-	MeshKit.part(pivot, MeshKit.capsule(radius, length), color, Vector3(0.0, -length * 0.5, 0.0))
+	MeshKit.part(pivot, mesh, row)
 	return pivot
 
 
@@ -108,7 +134,4 @@ func _build_springs() -> void:
 	_springs = Node3D.new()
 	_springs.visible = false
 	add_child(_springs)
-	for i in 3:
-		MeshKit.part(
-			_springs, MeshKit.torus(0.24, 0.31), Color("c7d3dd"), Vector3(0.0, 0.34 + i * 0.13, 0.0), 0.9, 0.25
-		)
+	MeshKit.part(_springs, _meshes["springs"], "coil_metal", Vector3.ZERO, false)

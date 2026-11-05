@@ -1,0 +1,142 @@
+{
+  "environment": {
+    "sky": { "top": "#1c2433", "horizon": "#c4894e", "ground": "#20160f" },
+    "ambient": { "color": "#5f5650", "energy": 0.62 },
+    "tonemap": { "exposure": 1.0, "white": 6.0 },
+    "glow": { "enabled": 0, "intensity": 0.5, "bloom": 0.0, "hdr_threshold": 0.95 },
+    "fog": { "enabled": 1, "color": "#3a2c26", "density": 0.004 }
+  },
+  "lights": {
+    "key": {
+      "color": "#ffd0a0", "energy": 0.5, "specular": 0.3, "rotation": [-60, -60, 0],
+      "shadow_max_distance": 32.0, "shadow_blur": 1.5, "cull_mask": 1
+    },
+    "window_fill": {
+      "color": "#7f9fd6", "energy": 0.3, "specular": 0.0, "position": [260, 70, -70],
+      "range": 500.0, "attenuation": 0.0, "cull_mask": 3
+    },
+    "lamp": {
+      "color": "#ffc48a", "energy": 3.0, "specular": 0.15, "range": 55.0, "angle": 42.0, "attenuation": 0.15,
+      "aim_x": 0.0, "aim_y": 0.0, "cull_mask": 3,
+      "positions": [[-14, 24, -18], [-14, 24, -72], [-14, 24, -142]]
+    },
+    "follow": {
+      "color": "#ffe2c0", "energy": 0.6, "specular": 0.0, "range": 3.5, "attenuation": 0.5, "cull_mask": 1, "height": 1.2
+    },
+    "key_glow": {
+      "color": "#ffb020", "energy": 0.4, "specular": 0.5, "range": 8.0, "attenuation": 0.5, "cull_mask": 1
+    }
+  },
+  "readability": {
+    "halo": { "radius": 3.4, "alpha": 0.2, "color": "#ffb020" },
+    "blob": { "opacity": 0.45, "radius": 0.45, "beetle_radius": 0.75, "lift": 0.03 },
+    "edge": { "width": 0.06 },
+    "cog": { "cull_distance": 50.0 },
+    "beetle": { "cull_distance": 90.0, "detail_cull_distance": 45.0 },
+    "block": { "cull_distance": 110.0 }
+  },
+  "scenery": {
+    "zones": { "length": 40.0 },
+    "lead_screw": { "reach": 0.4 },
+    "twine": { "radius": 0.025, "top_y": 45.5 },
+    "window": { "bottom": "#f2a45c", "top": "#7fa4d8" },
+    "toy_box": { "ribbon": "#f4e8cf", "twine": "#2a2320", "crate_frame_shade": "#a3a3a8", "lid": "#7d1c4e", "used_lid": "#5b5550" },
+    "prop_colors": {
+      "oil_can": "#6f7560", "spool_wood": "#8a7458", "spool_thread": "#6b6f78", "tape_measure": "#66685f",
+      "chest_body": "#4a4f52", "chest_pull": "#8a8d8c", "stool": "#5e4d3b", "sawhorse": "#6b5a44"
+    },
+    "occlusion": { "wall_base_height": 7.0, "wall_base_alpha": 0.55, "prop_alpha": 0.6, "under_counter_height": 14.0, "under_counter_alpha": 0.85 }
+  },
+  "texture_adjust": {
+    "wood_table_001": [1.1, 0.8, 0.62]
+  },
+  "materials": {
+    "bench_oak": {
+      "texture_set": "wood_table_001", "maps": "dnr", "tint": [1.05, 1.15, 1.2], "specular": 0.25,
+      "roughness": 0.9, "normal_scale": 0.5, "uv_per_unit": 0.0625
+    },
+    "bench_maple": {
+      "texture_set": "wood_table_001", "maps": "dnr", "tint": [1.2, 1.3, 1.35], "specular": 0.25,
+      "roughness": 0.9, "normal_scale": 0.5, "uv_per_unit": 0.0625
+    },
+    "shelf_walnut": {
+      "texture_set": "wood_table_001", "maps": "dnr", "tint": [0.82, 0.88, 0.92], "specular": 0.25,
+      "roughness": 0.8, "normal_scale": 0.5, "uv_per_unit": 0.0625
+    },
+    "bench_edge": { "tint": "#b98a58", "roughness": 0.6 },
+    "toy_paint": {
+      "texture_set": "wood_table_001", "maps": "n", "vertex_color": true,
+      "roughness": 0.4, "normal_scale": 0.25, "uv_per_unit": 0.25
+    },
+    "wall_plaster": {
+      "texture_set": "painted_plaster_wall", "maps": "dn", "tint": "#9aa59b",
+      "roughness": 0.85, "normal_scale": 1.0, "uv_per_unit": 0.025, "render_layer": 2
+    },
+    "ceiling_plaster": {
+      "texture_set": "painted_plaster_wall", "maps": "d", "tint": "#5a564e",
+      "roughness": 0.9, "uv_per_unit": 0.025, "render_layer": 2
+    },
+    "floor_concrete": {
+      "texture_set": "concrete_floor_02", "maps": "d", "tint": "#574f45",
+      "roughness": 0.9, "uv_per_unit": 0.02, "render_layer": 2
+    },
+    "platform_steel": {
+      "texture_set": "metal_plate", "maps": "dnr", "tint": [1.5, 1.5, 1.4],
+      "metallic": 0.6, "roughness": 1.0, "normal_scale": 0.5, "uv_per_unit": 0.125
+    },
+    "steel_trim": { "tint": "#c9ced2", "metallic": 0.6, "roughness": 0.4 },
+    "rod_steel": { "tint": "#8f969c", "metallic": 0.6, "roughness": 0.45 },
+    "beetle_shell": {
+      "texture_set": "rust_coarse_01", "maps": "dnr", "tint": [1.35, 1.1, 0.95],
+      "metallic": 0.3, "roughness": 1.0, "normal_scale": 0.8, "mesh_uv": [2, 1],
+      "emission": "#7a3214", "emission_energy": 0.6
+    },
+    "beetle_gear": { "tint": "#e6eaec", "metallic": 0.5, "roughness": 0.3 },
+    "beetle_eyes": { "tint": "#ff7a1a", "roughness": 0.5, "emission": "#ff5a10", "emission_energy": 1.1 },
+    "beetle_legs": { "tint": "#2b2523", "roughness": 0.7 },
+    "toy_box_body": { "tint": "#b02a6e", "roughness": 0.3 },
+    "toy_box_used": { "tint": "#77706a", "roughness": 0.85 },
+    "box_trim": { "vertex_color": true, "roughness": 0.6 },
+    "crate": {
+      "texture_set": "wood_table_001", "maps": "dn", "vertex_color": true, "tint": [1.7, 1.85, 2.0],
+      "roughness": 0.75, "normal_scale": 0.5, "uv_per_unit": 0.25
+    },
+    "cog": { "tint": "#e8b13a", "metallic": 0.35, "roughness": 0.32, "emission": "#c98a1c", "emission_energy": 0.55 },
+    "tock_brass": { "tint": "#d8a93f", "metallic": 0.7, "roughness": 0.3, "emission": "#3a2408", "emission_energy": 0.4 },
+    "tock_overalls": { "tint": "#25b3ae", "roughness": 0.75 },
+    "tock_cap": { "tint": "#d43f35", "roughness": 0.4 },
+    "tock_head": { "tint": "#f0c98d", "roughness": 0.45 },
+    "tock_eyes": { "vertex_color": true, "roughness": 0.15 },
+    "tock_legs": { "tint": "#aab2ba", "metallic": 0.6, "roughness": 0.35 },
+    "coil_metal": { "tint": "#c7d3dd", "metallic": 0.8, "roughness": 0.25 },
+    "spare_key": { "tint": "#4caf6a", "metallic": 0.3, "roughness": 0.35, "emission": "#4caf6a", "emission_energy": 0.5 },
+    "golden_key": { "tint": "#ffc83a", "metallic": 0.85, "roughness": 0.22, "emission": "#ffb020", "emission_energy": 0.8 },
+    "spring_base": { "tint": "#3a3d42", "metallic": 0.5, "roughness": 0.5 },
+    "spring_top": { "tint": "#d9483b", "roughness": 0.35, "emission": "#d9483b", "emission_energy": 0.2 },
+    "checkpoint_base": { "tint": "#d8a93f", "metallic": 0.7, "roughness": 0.3 },
+    "checkpoint_off": { "tint": "#77706a", "roughness": 0.5 },
+    "checkpoint_on": { "tint": "#4caf6a", "roughness": 0.5, "emission": "#4caf6a", "emission_energy": 1.5 },
+    "halo": { "vertex_color": true, "unshaded": true, "additive": true, "billboard": true, "no_fog": true },
+    "soft_shadow": { "vertex_color": true, "unshaded": true, "alpha": true, "no_fog": true },
+    "window_glow": { "vertex_color": true, "unshaded": true, "no_fog": true, "render_layer": 2 },
+    "window_frame": { "tint": "#3d3a36", "roughness": 0.8, "render_layer": 2 },
+    "pegboard": {
+      "generated": "pegboard_dots", "tint": "#8b7a63", "roughness": 0.85, "uv_per_unit": 1.6, "render_layer": 2
+    },
+    "scenery_wood": {
+      "texture_set": "wood_table_001", "maps": "d", "tint": [1.0, 1.1, 1.2],
+      "roughness": 0.85, "uv_per_unit": 0.0625, "render_layer": 2
+    },
+    "scenery_frame": { "tint": "#4d4238", "roughness": 0.8, "render_layer": 2 },
+    "tool_steel": { "tint": "#b4babd", "metallic": 0.3, "roughness": 0.4, "render_layer": 2, "cull_distance": 80.0 },
+    "tool_handle": { "tint": "#8a6a4e", "roughness": 0.65, "render_layer": 2, "cull_distance": 80.0 },
+    "lamp_metal": { "tint": "#3f4a45", "metallic": 0.4, "roughness": 0.5, "two_sided": true, "render_layer": 2 },
+    "lamp_bulb": { "tint": "#fff0d0", "unshaded": true, "no_fog": true, "emission": "#ffd9a0", "emission_energy": 3.0, "render_layer": 2 },
+    "jar_glass": { "tint": [0.8, 0.86, 0.85, 0.18], "alpha": true, "roughness": 0.15, "render_layer": 2, "cull_distance": 80.0 },
+    "jar_lid": { "tint": "#5e625f", "metallic": 0.5, "roughness": 0.5, "render_layer": 2, "cull_distance": 80.0 },
+    "vise_casting": { "tint": "#4d5a4e", "metallic": 0.3, "roughness": 0.6, "render_layer": 2, "cull_distance": 90.0 },
+    "prop_muted": { "vertex_color": true, "roughness": 0.65, "render_layer": 2, "cull_distance": 110.0 },
+    "clock_face": { "tint": "#b8b09c", "roughness": 0.6, "render_layer": 2 },
+    "clock_hands": { "tint": "#25221f", "roughness": 0.5, "render_layer": 2 }
+  }
+}

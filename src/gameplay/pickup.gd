@@ -5,8 +5,7 @@ extends Area3D
 signal collected(kind: String, player: Player)
 
 const SPIN_RATE := 3.0
-const BRASS := Color("e3b23c")
-const SILVER := Color("c7d3dd")
+static var _coil_mesh: ArrayMesh
 
 var kind := ""
 
@@ -24,12 +23,12 @@ func setup(pickup_kind: String, at: Vector3) -> void:
 	add_child(collider)
 	match kind:
 		"cog":
-			MeshKit.part(self, MeshKit.cog_mesh(), BRASS, Vector3.ZERO, 0.15, 0.4)
+			var cog := MeshKit.part(self, MeshKit.cog_mesh(), "cog", Vector3.ZERO, false)
+			cog.visibility_range_end = Look.num("readability", "cog", "cull_distance")
 		"coil":
-			for i in 4:
-				MeshKit.part(self, MeshKit.torus(0.2, 0.34), SILVER, Vector3(0.0, -0.27 + i * 0.18, 0.0), 0.9, 0.2)
+			MeshKit.part(self, _get_coil_mesh(), "coil_metal", Vector3.ZERO, false)
 		"life":
-			MeshKit.windup_key(self, Color("4caf6a"), 1.1)
+			MeshKit.windup_key(self, "spare_key", 1.1, false)
 
 
 func _ready() -> void:
@@ -45,3 +44,14 @@ func _on_body_entered(body: Node3D) -> void:
 		collected.emit(kind, body as Player)
 		set_deferred("monitoring", false)
 		queue_free()
+
+
+static func _get_coil_mesh() -> ArrayMesh:
+	if _coil_mesh != null:
+		return _coil_mesh
+	var batch := MeshBatch.new()
+	var ring := MeshKit.torus(0.2, 0.34)
+	for i in 4:
+		batch.add_mesh(ring, Transform3D(Basis.IDENTITY, Vector3(0.0, -0.27 + i * 0.18, 0.0)))
+	_coil_mesh = batch.commit()
+	return _coil_mesh

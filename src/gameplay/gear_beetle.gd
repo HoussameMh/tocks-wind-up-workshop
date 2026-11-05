@@ -4,10 +4,10 @@ extends Area3D
 
 signal stomped
 
-const RUST := Color("a4532f")
-const DARK := Color("2b2523")
 const GEAR_SPIN := 3.0
 const TURN_RATE := 10.0
+
+static var _shared_meshes: Dictionary = {}
 
 ## Patrol speed; tests may set this to 0 to hold it in place.
 var speed := 0.0
@@ -97,19 +97,38 @@ func _squash(player: Player) -> void:
 
 
 func _build_model() -> void:
+	_bake_meshes()
+	var far := Look.num("readability", "beetle", "cull_distance")
+	var near := Look.num("readability", "beetle", "detail_cull_distance")
+	var blob := MeshKit.blob(self, Look.num("readability", "blob", "beetle_radius"))
+	blob.position.y = Look.num("readability", "blob", "lift")
+	blob.visibility_range_end = near
 	_body = Node3D.new()
 	add_child(_body)
-	var dome := MeshKit.part(_body, MeshKit.sphere(0.55), RUST, Vector3(0.0, 0.42, 0.0), 0.4, 0.75)
+	var dome := MeshKit.part(_body, _shared_meshes["shell"], "beetle_shell", Vector3(0.0, 0.42, 0.0))
 	dome.scale = Vector3(1.0, 0.72, 1.15)
-	for side: float in [-1.0, 1.0]:
-		MeshKit.part(_body, MeshKit.sphere(0.11, 8), Color.WHITE, Vector3(side * 0.2, 0.52, 0.5))
-		MeshKit.part(_body, MeshKit.sphere(0.055, 8), DARK, Vector3(side * 0.2, 0.52, 0.59))
-		for row: float in [-0.3, 0.3]:
-			MeshKit.part(
-				_body, MeshKit.box(Vector3(0.14, 0.2, 0.14)), DARK, Vector3(side * 0.42, 0.1, row)
-			)
+	dome.visibility_range_end = far
+	MeshKit.part(_body, _shared_meshes["eyes"], "beetle_eyes", Vector3.ZERO, false).visibility_range_end = far
+	MeshKit.part(_body, _shared_meshes["legs"], "beetle_legs", Vector3.ZERO, false).visibility_range_end = near
 	_gear = Node3D.new()
 	_gear.position = Vector3(0.0, 0.84, 0.0)
 	_body.add_child(_gear)
-	var gear_mesh := MeshKit.part(_gear, MeshKit.cog_mesh(), Color("8d8378"), Vector3.ZERO, 0.8, 0.45)
+	var gear_mesh := MeshKit.part(_gear, MeshKit.cog_mesh(), "beetle_gear")
 	gear_mesh.rotation.x = PI / 2.0
+	gear_mesh.visibility_range_end = near
+
+
+static func _bake_meshes() -> void:
+	if not _shared_meshes.is_empty():
+		return
+	_shared_meshes["shell"] = MeshKit.sphere(0.55)
+	var eyes := MeshBatch.new()
+	var eye := MeshKit.sphere(0.11, 8)
+	var legs := MeshBatch.new()
+	var leg := MeshKit.box(Vector3(0.14, 0.2, 0.14))
+	for side: float in [-1.0, 1.0]:
+		eyes.add_mesh(eye, Transform3D(Basis.IDENTITY, Vector3(side * 0.2, 0.52, 0.5)))
+		for row: float in [-0.3, 0.3]:
+			legs.add_mesh(leg, Transform3D(Basis.IDENTITY, Vector3(side * 0.42, 0.1, row)))
+	_shared_meshes["eyes"] = eyes.commit()
+	_shared_meshes["legs"] = legs.commit()

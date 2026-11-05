@@ -1,10 +1,10 @@
 # Tock's Wind-Up Workshop
 
-An original 3D platformer made with Godot 4.7. Play as Tock, a pocket-sized clockwork kid racing across a giant toy workshop: stomp rusty gear-beetles, crack open toy boxes, hunt for secrets and reach the Golden Key before the clock runs out.
+An original 3D platformer made with Godot 4.7. Play as Tock, a tiny clockwork toy racing across a real craftsman's workshop at dusk: stomp rusty gear-beetles, crack open toy boxes, hunt for secrets and reach the Golden Key before the clock runs out.
 
 ![Tock at the start of the Workbench Run course](docs/images/start_of_course.png)
 
-> **Status: first playable.** One complete level works from start to finish. The visuals are simple shapes for now, and an upgrade to realistic materials, a new menu and tested gamepad support is in progress.
+> **Status: early playable.** One complete level works from start to finish, with realistic materials and lighting. A new menu and finished gamepad support are in progress.
 
 ## Play it
 
@@ -35,6 +35,7 @@ If `godot` isn't recognized, use the full path to the Godot executable instead. 
 - **Gear-beetles:** 9 patrolling enemies. Stomp them from above, because any other contact hurts.
 - **Toy boxes:** bump them from below for cogs, a Coil Spring or a spare key. Two of them are hidden.
 - **Coil Spring:** makes Tock bigger, lets him jump higher and break crates, and lets him survive one extra hit.
+- **The workshop:** real wood, metal, plaster and concrete textures, warm lamp lighting, a dusk window, and a pegboard with hung tools. Tock and the beetles are well-made toy figures rather than photoreal characters, because everything is built in code without imported models.
 - **Game systems:** cogs, lives, score, a timer, a HUD, menus and sound effects generated in code.
 
 ## What we did
@@ -46,7 +47,8 @@ This game was built with [Claude Code](https://claude.com/claude-code), on top o
 3. **Built the first playable.** Wrote the movement, camera, enemies, level, menus and sound in GDScript, with gameplay values kept in [data files](assets/data/data_reference.md) so they can be tuned without code changes.
 4. **Tested it.** Added 31 automated tests that run the real game with real physics, including a bot that finishes the whole course. Breaking the jump height on purpose made the bot fail, which confirms that test can catch an impossible level.
 5. **Tuned it for low-end hardware.** Measured frame rate on an Intel HD 520 and changed settings based on the results, reaching a steady 60 FPS on the title screen. Gameplay ran at about 90 FPS uncapped when measured, and is capped at 60.
-6. **Started the visual upgrade.** Added free [CC0 textures](assets/textures/texture_sources.md) and installed the `godot-shaders` and `godot-ui-control` skills. This work is not finished, and the game doesn't use the textures yet.
+6. **Upgraded the visuals with the studio's specialists.** Used `find-skills` to find and install the `godot-shaders` and `godot-ui-control` skills, and added free [CC0 textures](assets/textures/texture_sources.md). The studio's art director wrote the [art bible](design/art/art-bible.md), and its technical artist rebuilt the materials, lighting and scenery from it. Merging meshes also made the game faster: the slowest spot measured went from about 57 FPS to about 80 FPS uncapped. Glow was cut because it cost too much on this hardware, and edges remain jagged because anti-aliasing is off.
+7. **Now in progress.** The studio's UI programmer is working on a new menu and finished gamepad support.
 
 ## Project layout
 
@@ -73,7 +75,6 @@ The test run exits with 0 if everything passed, 1 on failures, 2 if no tests wer
 
 ## Roadmap
 
-- Realistic materials and lighting
 - A more attractive menu
 - Tested gamepad support
 - More levels, music and a boss fight against Baron Rust
