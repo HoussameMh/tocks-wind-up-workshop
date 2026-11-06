@@ -127,6 +127,7 @@ var _lob_lead_p3 := 0.0
 var _denture_tell := 0.0
 var _denture_flight := 0.0
 var _denture_recover := 0.0
+var _denture_land_grace := 0.0
 var _sweep_tell := 0.0
 var _stomp_damage := 0
 var _bolt_damage := 0
@@ -170,6 +171,7 @@ func setup(tuning: Tuning, level: Level, tock: Player, key_pos: Vector3, key_are
 	_denture_tell = tuning.num("boss", "denture_tell")
 	_denture_flight = tuning.num("boss", "denture_flight")
 	_denture_recover = tuning.num("boss", "denture_recover")
+	_denture_land_grace = tuning.num("boss", "denture_land_grace")
 	_sweep_tell = tuning.num("boss", "sweep_tell")
 	_stomp_damage = int(tuning.num("boss", "stomp_damage"))
 	_bolt_damage = int(tuning.num("boss", "bolt_damage"))
@@ -236,7 +238,10 @@ func on_tock_respawned() -> void:
 	if state == State.DEFEAT or state == State.DONE:
 		return
 	_clear_arena()
-	rules.restart_phase(_phase)
+	_weak_spot.remove_from_group(BoltBlaster.TARGET_GROUP)
+	_droop_goal = 0.0
+	# From health, not _phase: during a phase break _phase still names the phase just finished.
+	rules.restart_phase(rules.phase())
 	hp_changed.emit(rules.hp, rules.max_hp)
 	_enter(State.GRACE, _grace_seconds)
 	sound_requested.emit("boss_grumble")
@@ -403,6 +408,8 @@ func _land_dentures() -> void:
 			_denture_markers[i].visible = false
 			var entry := {"pos": [DENTURE_LANDINGS[i].x, DENTURE_LANDINGS[i].y, DENTURE_LANDINGS[i].z]}
 			var set_of_teeth := _level.add_teeth(entry)
+			# Spec section 6: landing is harmless, even on top of Tock.
+			set_of_teeth.contact_immune_left = _denture_land_grace
 			teeth.append(set_of_teeth)
 
 
@@ -512,7 +519,7 @@ func _clear_arena() -> void:
 		marker.visible = false
 	for set_of_teeth in teeth:
 		if is_instance_valid(set_of_teeth):
-			set_of_teeth.queue_free()
+			set_of_teeth.remove_now()
 	teeth.clear()
 
 
@@ -614,7 +621,7 @@ func _build_model() -> void:
 		eyes.add_mesh(MeshKit.sphere(0.24, 8), Transform3D(Basis.IDENTITY, Vector3(side * 0.62, 0.22, 1.2)))
 	MeshKit.part(_head, eyes.commit(), "beetle_eyes", Vector3.ZERO, false)
 	var monocle := MeshKit.torus(0.32, 0.44)
-	var monocle_part := MeshKit.part(_head, monocle, "checkpoint_base", Vector3(0.62, 0.22, 1.32), false)
+	var monocle_part := MeshKit.part(_head, monocle, "steel_trim", Vector3(0.62, 0.22, 1.32), false)
 	monocle_part.rotation.x = PI / 2.0
 	_hat = Node3D.new()
 	_hat.position = Vector3(0.0, 1.12, 0.0)
@@ -632,9 +639,9 @@ func _build_moustache_half(side: float) -> Node3D:
 	pivot.position = Vector3(0.0, MOUSTACHE_Y, MOUSTACHE_Z)
 	_head.add_child(pivot)
 	var half := MeshBatch.new()
-	half.add_box(Vector3(side * 0.7, 0.0, 0.0), Vector3(1.4, 0.26, 0.26))
-	half.add_box(Vector3(side * 1.45, 0.1, -0.04), Vector3(0.36, 0.2, 0.22))
-	MeshKit.part(pivot, half.commit(), "boss_dark", Vector3.ZERO, false)
+	half.add_box(Vector3(side * 0.8, 0.0, 0.0), Vector3(1.6, 0.5, 0.3))
+	half.add_box(Vector3(side * 1.75, 0.2, -0.04), Vector3(0.5, 0.4, 0.3))
+	MeshKit.part(pivot, half.commit(), "boss_moustache", Vector3.ZERO, false)
 	return pivot
 
 

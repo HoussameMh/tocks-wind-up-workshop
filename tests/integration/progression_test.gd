@@ -131,6 +131,32 @@ func test_whole_campaign_runs_in_order_and_only_the_last_key_wins(t: TestKit) ->
 	await t.stop_game(main)
 
 
+## Regression: a key touched while dying banked the time bonus and froze the clock for the level.
+func test_key_touched_while_dying_pays_nothing_and_leaves_the_clock_running(t: TestKit) -> void:
+	var main: Main = await t.start_game()
+	main.player.die()
+	await t.wait_ticks(1)
+	t.equal(main.flow.state, GameFlow.State.LIFE_LOST, "dying")
+	var score := main.run_state.score
+	main.level.goal_reached.emit()
+	t.equal(main.run_state.score, score, "no time bonus")
+	await t.wait_until(func() -> bool: return main.flow.state == GameFlow.State.PLAYING, 120)
+	var time_before := main.run_state.time_left
+	await t.wait_ticks(30)
+	t.is_true(main.run_state.time_left < time_before, "the clock still runs")
+	await t.stop_game(main)
+
+
+func test_boss_gauge_leaves_with_the_boss_level(t: TestKit) -> void:
+	var main: Main = await t.start_level(4)
+	t.is_true(main.hud.boss_gauge_visible(), "gauge on the boss level")
+	t.is_true(main.flow.fire(GameFlow.Trigger.PAUSE), "pause")
+	main.start_game()
+	await t.wait_ticks(2)
+	t.is_true(not main.hud.boss_gauge_visible(), "gone on a new run")
+	await t.stop_game(main)
+
+
 func test_rearm_box_refills_on_respawn_and_removes_its_uncollected_reward(t: TestKit) -> void:
 	var main: Main = await t.start_arena()
 	var at := main.player.global_position + Vector3(20.0, 2.7, 0.0)

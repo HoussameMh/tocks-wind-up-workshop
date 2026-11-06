@@ -55,7 +55,7 @@
   ],
   "planes": [
     { "a": [-9, 1, -88], "b": [9, 1, -88], "speed": 5.0 },
-    { "a": [0, 4, -130], "b": [0, 4, -158], "speed": 5.0 },
+    { "a": [0, 6, -134], "b": [0, 6, -158], "speed": 5.0 },
     { "a": [-9, 2, -176], "b": [9, 2, -176], "speed": 5.5 }
   ],
   "cog_lines": [
@@ -81,6 +81,7 @@
   ],
   "checkpoints": [
     { "pos": [-3.5, 1, -72], "respawn": [0, 1.2, -72] },
+    { "pos": [-3.5, 5, -126], "respawn": [0, 5.2, -126] },
     { "pos": [-3.5, 2, -162], "respawn": [0, 2.2, -162] }
   ],
   "goal": { "pos": [0, 4.6, -188], "area_size": [5, 4, 5] },
@@ -118,8 +119,8 @@
     { "type": "giant_battery", "pos": [14, -23, -40], "radius": 4, "height": 24 },
     { "type": "giant_battery", "pos": [13, -23, -52], "radius": 4, "height": 26 },
     { "type": "giant_battery", "pos": [15, -23, -140], "radius": 4.5, "height": 27 },
-    { "type": "stir_stick", "pos": [12, -23, -100], "height": 36, "color": "#c9971f" },
-    { "type": "stir_stick", "pos": [-13, -1, -125], "height": 20, "color": "#2a62b8" },
+    { "type": "stir_stick", "pos": [12, -23, -100], "height": 36, "color": "#9c8a58" },
+    { "type": "stir_stick", "pos": [-13, -1, -125], "height": 20, "color": "#64789a" },
     { "type": "spool", "pos": [-19, -1, -8] },
     { "type": "spool", "pos": [-20, -1, -50] },
     { "type": "tape_measure", "pos": [-20, -1, -70] },

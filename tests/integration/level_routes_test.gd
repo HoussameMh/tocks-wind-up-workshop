@@ -236,6 +236,11 @@ func test_level_four_sweep_shoves_tock_without_hurting_or_trapping_him(t: TestKi
 	var moved := await t.wait_until(func() -> bool: return absf(main.player.global_position.x - start_x) > 0.5, 300)
 	t.is_true(moved, "the bar moves Tock")
 	t.equal(main.player.form(), PowerState.Form.SMALL, "unhurt, since a small Tock would be dead")
-	t.is_true(main.player.alive or main.player.global_position.y < 5.0, "alive unless shoved off the side")
 	t.is_true(absf(sweep.global_position.x) <= 7.01, "the bar stays on its rail")
+	# Not trapped: he can walk clear, unless the shove already took him over the side.
+	t.drive(main, Vector3.BACK)
+	var free := await t.wait_until(
+		func() -> bool: return main.player.global_position.z > -84.0 or main.player.global_position.y < 5.0, 120
+	)
+	t.is_true(free, "Tock can walk away, at %s" % main.player.global_position)
 	await t.stop_game(main)

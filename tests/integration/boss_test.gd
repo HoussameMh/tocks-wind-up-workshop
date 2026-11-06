@@ -177,6 +177,77 @@ func test_each_phase_runs_its_attack_list_with_spec_timing(t: TestKit) -> void:
 	await t.stop_game(main)
 
 
+func _attack_seconds(t: TestKit, main: Main, hp: int) -> float:
+	var boss := main.level.boss
+	boss.rules.hp = hp
+	boss._enter(BaronRust.State.GRACE, 0.0)
+	await t.wait_until(func() -> bool: return boss.state == BaronRust.State.ATTACK, 5)
+	var ticks := 0
+	while boss.state == BaronRust.State.ATTACK and ticks < 2400:
+		_shield(main)
+		await t.wait_ticks(1)
+		ticks += 1
+	return ticks / 60.0
+
+
+func test_later_phases_run_their_own_attack_lists_with_spec_timing(t: TestKit) -> void:
+	var main: Main = await _start(t)
+	var boss := main.level.boss
+	_shield(main)
+	t.near(await _attack_seconds(t, main, 12), 9.2, 0.25, "phase 2: lob, denture, slam")
+	t.equal(boss.phase(), 1, "that was phase 2")
+	t.equal(boss.teeth.size(), 2, "it spat two sets of teeth")
+	boss._clear_arena()
+	t.near(await _attack_seconds(t, main, 6), 16.7, 0.25, "phase 3: sweep, lob, slam, sweep")
+	t.equal(boss.phase(), 2, "that was phase 3")
+	t.equal(boss.teeth.size(), 0, "no teeth in phase 3")
+	await t.stop_game(main)
+
+
+## Regression: a death in the break between phases used the old phase, restoring far too much health.
+func test_death_during_a_phase_break_restores_the_new_phases_health(t: TestKit) -> void:
+	var main: Main = await _start(t)
+	var boss := main.level.boss
+	boss.rules.hp = 13
+	await _wait_for_state(t, main, BaronRust.State.EXPOSED, 1800)
+	boss.take_bolt()
+	t.equal(boss.state, BaronRust.State.BREAK, "phase break")
+	main.player.die()
+	await t.wait_until(func() -> bool: return main.flow.state == GameFlow.State.PLAYING, 120)
+	t.equal(boss.rules.hp, 12, "health for the phase that was earned, not 18")
+	await t.stop_game(main)
+
+
+## Regression: after a death with the head down, it stayed down and kept soaking up aimed bolts.
+func test_death_while_exposed_raises_the_head_and_stops_it_being_a_target(t: TestKit) -> void:
+	var main: Main = await _start(t)
+	var boss := main.level.boss
+	await _wait_for_state(t, main, BaronRust.State.EXPOSED, 1800)
+	main.player.die()
+	await t.wait_until(func() -> bool: return main.flow.state == GameFlow.State.PLAYING, 120)
+	t.equal(boss.state, BaronRust.State.GRACE, "the Baron is laughing")
+	t.is_true(not boss._weak_spot.is_in_group(BoltBlaster.TARGET_GROUP), "cannot be aimed at")
+	t.equal(boss._droop_goal, 0.0, "the head comes back up")
+	await t.stop_game(main)
+
+
+## Regression: spec section 6 says landing is harmless, but teeth landing on Tock hurt him at once.
+func test_dentures_landing_on_tock_are_harmless_for_a_moment(t: TestKit) -> void:
+	var main: Main = await _start(t)
+	var boss := main.level.boss
+	boss.set_physics_process(false)
+	main.player.apply_power_up()
+	t.drive(main)
+	var landing := BaronRust.DENTURE_LANDINGS[0]
+	main.player.global_position = landing + Vector3.UP * 0.2
+	await t.wait_ticks(2)
+	boss._denture_markers[0].visible = true
+	boss._land_dentures()
+	await t.wait_ticks(6)
+	t.equal(main.player.form(), PowerState.Form.COILED, "unhurt as they land")
+	await t.stop_game(main)
+
+
 func test_slam_ring_hurts_on_the_floor_and_a_jump_clears_it(t: TestKit) -> void:
 	var main: Main = await _start(t)
 	var boss := main.level.boss
@@ -195,10 +266,6 @@ func test_slam_ring_hurts_on_the_floor_and_a_jump_clears_it(t: TestKit) -> void:
 	command.jump_pressed = false
 	await t.wait_until(func() -> bool: return boss.hazards.ring_radius() > distance + 3.0 or boss.hazards.ring_radius() < 0.0, 120)
 	t.is_true(not hurt["yes"], "a jump clears the ring")
-	command.jump_held = false
-	await t.wait_until(func() -> bool: return main.player.is_on_floor(), 120)
-	await t.wait_until(func() -> bool: return boss.hazards.rings_alive() > 0 and boss.hazards.ring_radius() > distance + 0.8, 500)
-	await t.wait_until(func() -> bool: return hurt["yes"] or boss.hazards.rings_alive() == 0, 200)
 	await t.stop_game(main)
 
 
@@ -301,9 +368,12 @@ func test_phase_break_clears_hazards_and_teeth_then_starts_the_next_phase(t: Tes
 	var teeth := main.level.add_teeth({"pos": [6.0, 0.0, -14.0]})
 	boss.teeth.append(teeth)
 	boss.hazards.start_ring()
+	var box: SurpriseBlock = main.level.blocks[0]
+	box.bump(false)
 	boss.take_bolt()
 	t.equal(boss.rules.hp, 12, "phase boundary reached")
 	t.equal(boss.state, BaronRust.State.BREAK, "phase break")
+	t.is_true(not box.used, "boxes re-arm for the new phase")
 	t.equal(boss.hazards.rings_alive(), 0, "hazards gone")
 	await t.wait_ticks(1)
 	t.is_true(not is_instance_valid(teeth), "teeth gone")

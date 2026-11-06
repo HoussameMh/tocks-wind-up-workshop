@@ -29,8 +29,8 @@ const INTRO_SECONDS := 0.6
 const SLIDE_SECONDS := 0.22
 const SLIDE_DISTANCE := 48.0
 const LOGO_TICK_SECONDS := 1.0
-## Confirm presses are ignored this long after an end screen appears, so a player mashing
-## jump as the run ends does not skip the screen by accident.
+## Confirm and cancel presses are ignored this long after an end screen appears, so a player
+## mashing jump or fire as the run ends does not skip the screen by accident.
 const CONFIRM_GRACE_MSEC := 400
 const SCORE_STEPS := 12
 const SCORE_STEP_SECONDS := 0.05
@@ -149,7 +149,9 @@ func _input(event: InputEvent) -> void:
 		return
 	if _is_press(event):
 		_finish_motion()
-	if event.is_action("ui_accept") and Time.get_ticks_msec() < _confirm_allowed_msec:
+	# Cancel too: gamepad B is also Fire, and a stray shot must not throw away the whole run.
+	var confirms := event.is_action("ui_accept") or event.is_action("ui_cancel")
+	if confirms and Time.get_ticks_msec() < _confirm_allowed_msec:
 		get_viewport().set_input_as_handled()
 	if event.is_echo() and _is_menu_direction(event):
 		# Holding a key sends about 30 repeats a second, which made the selection race through

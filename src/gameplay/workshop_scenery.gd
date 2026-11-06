@@ -488,7 +488,7 @@ static func _add_giant_battery(group: MeshBatch.Group, at: Vector3, radius: floa
 	var lower := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.3)
 	batch.add_mesh(MeshKit.cylinder(radius, radius, height * 0.6, 20), lower, _prop_color("battery_body"))
 	var upper := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.8)
-	batch.add_mesh(MeshKit.cylinder(radius, radius, height * 0.4, 20), upper, _prop_color("battery_copper"))
+	batch.add_mesh(MeshKit.cylinder(radius, radius, height * 0.4, 20), upper, _prop_color("giant_battery_copper"))
 	var nub := Transform3D(Basis.IDENTITY, at + Vector3.UP * (height + height * 0.03))
 	batch.add_mesh(MeshKit.cylinder(radius * 0.35, radius * 0.35, height * 0.06, 14), nub, _prop_color("pencil_ferrule"))
 	_add_prop_occlusion(group, at, Vector2(radius, radius) * 1.15)

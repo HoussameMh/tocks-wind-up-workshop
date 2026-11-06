@@ -14,6 +14,8 @@ var defeated := false
 var tock: Player
 ## The shared eraser and bubble pool, given by Level.
 var shots: EnemyShotPool
+## Contact does nothing for this many seconds, such as while landing on Tock.
+var contact_immune_left := 0.0
 
 var _stomp_margin := 0.0
 var _touching: Player
@@ -29,9 +31,17 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if defeated:
 		return
+	contact_immune_left = maxf(contact_immune_left - delta, 0.0)
 	_enemy_tick(delta)
-	if _touching != null and not defeated:
+	if _touching != null and not defeated and contact_immune_left <= 0.0:
 		_resolve_contact(_touching)
+
+
+## Takes this enemy out of play at once, with no exit and no score. It cannot touch Tock even in the
+## tick before it is freed.
+func remove_now() -> void:
+	_defeat()
+	queue_free()
 
 
 ## Bolt contract: where a bolt flies to.

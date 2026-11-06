@@ -338,6 +338,9 @@ func _on_checkpoint_reached(respawn_at: Vector3) -> void:
 
 ## The last level's key ends the run; any other key ends the level.
 func _on_goal_reached() -> void:
+	# The key's area spins, so it can sweep over a Tock who has just died.
+	if flow.state != GameFlow.State.PLAYING:
+		return
 	run_state.bank_time_bonus()
 	if level_index >= campaign_size() - 1:
 		run_state.bank_victory_bonus()

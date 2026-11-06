@@ -162,9 +162,15 @@ func test_b_button_on_end_screen_returns_to_title(t: TestKit) -> void:
 	_end_run(main)
 	await t.wait_ticks(2)
 	t.equal(main.flow.state, GameFlow.State.GAME_OVER, "run ended")
+	# B is also Fire, so a player shooting as the run ends must not skip the screen by accident.
 	_tap(JOY_BUTTON_B)
 	await t.wait_ticks(2)
-	t.equal(main.flow.state, GameFlow.State.TITLE, "B goes back to the title")
+	t.equal(main.flow.state, GameFlow.State.GAME_OVER, "B mashed as the screen appears is ignored")
+	var allowed_at := Time.get_ticks_msec() + Screens.CONFIRM_GRACE_MSEC
+	await t.wait_until(func() -> bool: return Time.get_ticks_msec() > allowed_at, 6000)
+	_tap(JOY_BUTTON_B)
+	await t.wait_ticks(2)
+	t.equal(main.flow.state, GameFlow.State.TITLE, "B then goes back to the title")
 	_tap(JOY_BUTTON_B)
 	await t.wait_ticks(2)
 	t.equal(main.flow.state, GameFlow.State.TITLE, "B does nothing more on the title")

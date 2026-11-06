@@ -86,6 +86,7 @@
     "denture_tell": 1.0,
     "denture_flight": 0.8,
     "denture_recover": 1.0,
+    "denture_land_grace": 0.5,
     "sweep_tell": 1.5,
     "sweep_speed": 7.0,
     "sweep_top": 1.0,

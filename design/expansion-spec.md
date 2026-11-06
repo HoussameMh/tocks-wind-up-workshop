@@ -27,9 +27,9 @@ Airtime `T(dh) = 0.490 + sqrt(2 * (3.6 - dh) / 46)`, small form, jump held (grav
 | Planes / ducks / teeth | 0 / 0 / 0 | 3 / 0 / 0 | 2 / 4 / 0 | 2 / 2 / 5 | up to 2 teeth at once |
 | Enemy total | 9 | 10 | 12 | 16 | boss + up to 2 |
 | Longest required gap, margin | 4.0, 2.2 | 5.0 walk, 1.56 | 7.0 run, 2.7 | 8.0 run, 1.7 | no pits |
-| Smallest landing | 3 x 3 | 2.5 x 2.5 | 5 x 8, slick | 4 x 6, moving | n/a |
+| Smallest landing | 3 x 3 | 2.5 x 2.5 | 5 x 8, slick | 4 x 3 still, 4 x 6 moving | n/a |
 | New threat | base game | Blaster, planes, armor, tight pads, bands | slick paint, ducks, first run jump | moving wrenches, teeth | everything, in 3 phases |
-| Checkpoints | 2 | 2 | 3 | 3 | current phase |
+| Checkpoints | 2 | 3 | 3 | 4 | current phase |
 | Coil / Blaster boxes | 2 / 0 | 2 / 2 | 2 / 1 | 1 / 1 (secret only) | 1 / 1, re-arming |
 | Re-arming coil boxes (within the count) | 0 | 1 | 1 | 1 | n/a |
 | Hidden life / cogs | 1 / 54 | 1 / 50 | 1 / 45 | 1 / 40 | 0 / 12 |
@@ -152,8 +152,8 @@ Theme: a messy open drawer of rulers, batteries, pencils, rubber bands. Mechanic
 | C3 | -63 to -66 | -1.5, 3 | 2 | 3.0, 0, 3.2 | | 1 |
 | D Tray | -70 to -100 | 0, 12 | 1 | 4.0, -1, 2.56 | **CP1** pos (-3.5, 1, -72), respawn (0, 1.2, -72). Boxes z -78: **bolt** x3, crate x-3. Plane 1 rail (-9, 1, -88) to (9, 1, -88), speed 5, alone | 8 |
 | E1 Band floor | -104 to -110 | 0, 6 | 1 | 4.0, 0, 2.2 | Band (0, 1, -108) speed 17 | 8 in arc (with E2) |
-| E2 Divider | -110 to -128 | 0, 10 | 5 | wall dh +4: band margin 0.82 (coiled jump 4.6 also works) | **Coil** (0, 7.7, -113). Beetle x +-4 z -116, 2.5. **Armored** x +-3 z -122, 2.0 | |
-| F1 | -132 to -134.5 | 1.5, 2.5 | 4 | 4.0, -1, 2.56 | Plane 2 rail (0, 4, -130) to (0, 4, -158), speed 5 | 1 |
+| E2 Divider | -110 to -128 | 0, 10 | 5 | wall dh +4: band margin 0.82 (coiled jump 4.6 also works) | **Coil** (0, 7.7, -113). Beetle x +-4 z -116, 2.5. **Armored** x +-3 z -122, 2.0. **CP** (-3.5, 5, -126), respawn (0, 5.2, -126), so a miss on the pads repeats less | |
+| F1 | -132 to -134.5 | 1.5, 2.5 | 4 | 4.0, -1, 2.56 | Plane 2 rail (0, 6, -134) to (0, 6, -158), speed 5: high enough that its swoop clears a jump from the pads, whose edges would hide its landing blob | 1 |
 | F2 | -138.5 to -141 | -1.5, 2.5 | 4 | 4.03 diag, 0, 2.17 | | 1 |
 | F3 | -145.5 to -148 | 1.5, 2.5 | 3 | 4.53 diag, -1, 2.03 | | 1 |
 | F4 | -153 to -155.5 | 0, 2.5 | 2 | 5.0, -1, **1.56** | | 1 |
@@ -170,7 +170,7 @@ Order: paint alone → duck alone with cover → paint and duck → paint pads �
 |---|---|---|---|---|---|---|
 | A Lid | +8 to -24 | 0, 12 | 0 | start | Boxes z -7: **coil** x-2, cog x2. Paint center (0, 0, -16) 8 x 8, no threats, 4 m dry after | 6 |
 | B | -28 to -64 | 0, 12 | 0 | 4.0, 0, 2.2 | Duck (3.5, 0, -54). Cover block center (0, 0.75, -44), 3 x 1.5 x 3 | 6 |
-| C | -68 to -96 | 0, 12 | 0 | 4.0, 0, 2.2 | **CP1** (-3.5, 0, -71), respawn (0, 0.2, -71), 17.4 m from duck. **Bolt** (0, 2.7, -74). Paint (0, 0, -84) 12 x 14. Armored x +-5 z -92.5, 2.0. Duck (-4, 0, -95) | 6 |
+| C | -68 to -96 | 0, 12 | 0 | 4.0, 0, 2.2 | **CP1** (-3.5, 0, -71), respawn (0, 0.2, -71), 17.4 m from duck. **Bolt** (0, 2.7, -74). Armored x +-5 z -75.5, 2.0, on dry floor before the paint, because at z -92.5 a slide ended in it with no way round. Paint (0, 0, -84) 12 x 14. Duck (-4, 0, -95) | 6 |
 | D1 | -99.5 to -107.5 | 0, 5 | 1 | 3.5, +1, 2.28 | Fully painted; run landing stops in 5.04 with back held, pad is 8 | 4 across D |
 | D2 | -111 to -119 | 0, 5 | 1 | 3.5, 0, 2.7 | Fully painted. Hidden **life** (0, 3.7, -115) | |
 | D3 | -122.5 to -130.5 | 0, 5 | 1 | 3.5, 0, 2.7 | Fully painted | |
@@ -192,11 +192,11 @@ Order: teeth alone → wrench over a safety tray → lift → sweep → relay ov
 | C | -36 to -60 | 0, 10 | 0 | step-off 0.5 | **CP1** (-3.5, 0, -39), respawn (0, 0.2, -39). Armored x +-4 z -48, 2. Teeth (0, 0, -56) | 5 |
 | W2 lift | z -63 to -67 | 0, 4 x 4 | -> 6 | 3.0, 0, 3.2 | a y -0.25, b y 5.75, speed 2.5 (2.4 s per leg) | 2 |
 | E Upper | -70 to -96 | 0, 10 | 6 | 3.0, 0, 3.2 at top of lift | **CP2** (-3.5, 6, -73), respawn (0, 6.2, -73). **Coil rearm** (0, 8.7, -78). Beetle x +-4 z -80, 3. W3 sweep size 1 x 1 x 6, a (-7, 6.5, -88), b (7, 6.5, -88), speed 4: jump over (top 1 above floor). Beetle x +-4 z -94, 3 | 6 |
-| W4 | z -99 to -105 | size 4 x 0.5 x 6 | 6 | 3.0, 0, 3.2 | a x -3.5, b x 3.5, y 5.75, speed 3 (2.33 s per leg) | 3 across F |
-| W5 | z -108 to -114 | size 4 x 0.5 x 6 | 6 | 3.0, 0, 3.2 when spans overlap: about 0.93 s of each 2.33 s leg | a x 3.5, b x -3.5 (mirror of W4). Timing test | |
-| F3 | -117 to -120 | 0, 4 | 6 | 3.0, 0, 3.2 | Always overlaps W5. Hidden **life** (0, 8.7, -118.5) | |
-| G | -123 to -150 | 0, 12 | 6 | 3.0, 0, 3.2 | Teeth (-3, 6, -132), (3, 6, -136). Plane 1 rail x +-9 z -138, y 6, speed 5.5. Duck (4, 6, -142). Armored x +-5 z -146, 2.5 | 5 |
-| H | -158 to -186 | 0, 10 | 6 | **8.0, 0, run 1.7**, walk fails by 1.8; runway 27 m | **CP3** (-3.5, 6, -161), respawn (0, 6.2, -161), 19.4 m from duck. Boxes z -166: cog x-2, crate x2. Beetle x +-4 z -174, 3.5. Beetle x +-4 z -180, 3.5 | 5 |
+| W4 | z -99 to -105 | size 4 x 0.5 x 6 | 6 | 3.0, 0, 3.2 | a x -3.5, b x 3.5, y 5.75, speed 2 (3.5 s per leg) | 3 across F |
+| W5 | z -108 to -114 | size 4 x 0.5 x 6 | 6 | 3.0, 0, 3.2 when spans overlap: about 1.33 s of each 3.5 s leg, since a jump lasts about 0.89 s | a x 3.5, b x -3.5 (mirror of W4). Timing test | |
+| F3 | -117 to -120 | 0, 4 | 6 | 3.0, 0, 3.2 | Always overlaps W5. **CP** (1.5, 6, -118.5), respawn (0, 6.2, -118.5), so a missed 8 m jump does not repeat the relay. Hidden **life** (-1.4, 8.7, -118.5), off center so it cannot bonk the jump to G | |
+| G | -123 to -150 | 0, 12 | 6 | 3.0, 0, 3.2 | Teeth (-3, 6, -134.5), (3, 6, -136). Plane 1 rail x +-9 z -138, y 6, speed 5.5. Duck (5, 6, -134.5), out of range of a player lining up the jump at the far lip, where it would be off camera. Armored x +-5 z -146, 2.5 | 5 |
+| H | -158 to -186 | 0, 10 | 6 | **8.0, 0, run 1.7**, walk fails by 1.8; runway 27 m | **CP** (-3.5, 6, -161), respawn (0, 6.2, -161). Boxes z -166: cog x-2, crate x2. Beetle x +-4 z -175, 3.5. Beetle x +-4 z -180, 3.5 | 5 |
 | W6 lift | z -188 to -192 | 0, 4 x 4 | 6 -> 1 | 2.0, 0, 4.2 | a y 5.75, b y 0.75, speed 3 (1.67 s per leg) `[A3]` | |
 | J | -195 to -230 | 0, 14 | 1 | 3.0, 0, 3.2 at bottom of lift | Teeth (0, 1, -208). Plane 2 rail x +-10 z -214, y 1, speed 6. Armored x +-5 z -215, 3. Duck (-5, 1, -222). Plinth (0, 1.5, -226), key (0, 3.6, -226) | 4 |
 
@@ -206,7 +206,7 @@ Order: teeth alone → wrench over a safety tray → lift → sweep → relay ov
 
 **Arena:** floor center (0, -1, -13), size 26 x 2 x 26, top 0 (x +-13, z 0 to -26). Spawn (0, 0.2, -3). West, east and south edges have a visible rail 1.2 high plus a **player-only collider** up to y 8 on a new layer `LAYER_ARENA_WALL = 8`, added to the player's mask, so the camera ray ignores it and there are no pits. North: vise base z -26 to -34, top 6, solid. Toy boxes: **coil** (-9, 2.7, -9), **bolt** (9, 2.7, -9), re-armed at each phase start and each respawn. Cogs: 6 per line, x +-11, z -6 to -22, y 1.
 
-**Baron Rust (max 12 parts, at most 14 draws, 2 shadows):** static vise casting + steel; screw handle; barrel torso; wide head with bar moustache and monocle; tiny top hat; 2 arms; ember eyes; glowing mainspring. Hazards at most 9 draws; 2 teeth at most 10. Dynamic total including Tock's bolts stays within 38.
+**Baron Rust (max 12 parts, at most 14 draws, 2 shadows):** static vise casting + steel; screw handle; barrel torso; wide head with bar moustache and monocle; tiny top hat; 2 arms; ember eyes; glowing mainspring. Hazards at most 9 draws; 2 teeth at most 10. Teeth cannot hurt for `denture_land_grace` after landing, so a landing on Tock is harmless. Dynamic total including Tock's bolts stays within 38.
 
 **HP 18.** Phase 1: 18 to 13, Phase 2: 12 to 7, Phase 3: 6 to 1. Reaching 12 or 6 starts the next phase.
 
@@ -290,7 +290,7 @@ Add to `run`: `respawn_invulnerable_seconds: 1.5`. Band speed lives in the level
 **Automated (extend `tests/`):**
 1. L1's JSON is byte-identical; existing L1 bot finish and all current tests still pass (check the new 1.5 s respawn invulnerability against existing respawn tests).
 2. Bot with enemies removed finishes L2, L3 and L4 (as `test_full_course_can_be_finished_by_a_bot`), including walk-only through every non-run gap and the L3 and L4 run jumps at run speed.
-3. Data test over all level files: at most 5 enemies per 40 m window; at most 20 cogs per 50 m; no duck or teeth within 16 m of spawn or respawn; cog totals 50, 45, 40, 12; enemy counts equal section 1.
+3. Data test over all level files: at most 5 enemies per 40 m window; at most 20 cogs per 50 m, except level 1, whose layout is frozen by criterion 1; no duck or teeth within 16 m of spawn or respawn; cog totals 50, 45, 40, 12; enemy counts equal section 1.
 4. Form table: each cell of section 3 by unit test. Hit in BLASTER → COILED with invulnerability; next → SMALL; next → BROKEN.
 5. `fire` bound to F, LMB, RB, B and not to any existing action. Firing in SMALL or COILED spawns nothing. Bolts alive never exceed 3; cooldown holds.
 6. Aim: target at 29 degrees and 17 m is selected, 31 degrees or 19 m is not; an elevated plane in the cone is hit with no pitch input; LOS blocked means no target.

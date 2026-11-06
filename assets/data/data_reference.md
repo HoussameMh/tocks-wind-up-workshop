@@ -28,7 +28,7 @@ Distances are meters, speeds are meters per second and times are seconds.
 | `boss` | `slam_p1` to `slam_p3`, `slam_recover` | Warning before a bench slam per phase (safe 0.8 to 1.5), and the pause after it |
 | `boss` | `ring_speed`, `ring_radius`, `ring_height`, `ring_half_width` | The shockwave's speed and furthest reach, how high it hits and half its thickness |
 | `boss` | `lob_windup`, `lob_gap`, `lob_flight`, `lob_radius`, `lob_linger`, `lob_lead_p3` | The wrench throw: warning, seconds between throws, flight time, hit radius on landing, how long it lies there harmless, and how far ahead of Tock phase 3 aims, in seconds of his speed |
-| `boss` | `denture_tell`, `denture_flight`, `denture_recover` | The teeth attack: warning, flight to the landing marks, pause after |
+| `boss` | `denture_tell`, `denture_flight`, `denture_recover`, `denture_land_grace` | The teeth attack: warning, flight to the landing marks, pause after, and how long freshly landed teeth cannot hurt, so landing on Tock is harmless |
 | `boss` | `sweep_tell`, `sweep_speed`, `sweep_top`, `sweep_width` | The bar's warning, crossing speed, top height and width |
 | `boss` | `phase_break`, `retry_grace`, `defeat_seconds` | Length of the break between phases, of the pause after Tock respawns, and from the last hit to the Golden Key rising |
 | `boss` | `weak_spot_base_y`, `weak_spot_width`, `weak_spot_height` | The drooped head's hit box. A stomp needs feet above `weak_spot_base_y + enemy.stomp_margin` |

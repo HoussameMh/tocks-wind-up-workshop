@@ -15,7 +15,7 @@ const TRANSITIONS := {
 	State.DEFLATE: [State.COOLDOWN],
 	State.COOLDOWN: [State.IDLE],
 }
-const LEMON := Color("f2e85c")
+const LEMON := Color("e8f25a")
 const BILL := Color("e8622a")
 const BOB_RATE := 2.6
 const BOB_HEIGHT := 0.06
@@ -191,7 +191,7 @@ func _build_model() -> void:
 	_model = Node3D.new()
 	add_child(_model)
 	_bake_meshes()
-	MeshKit.part(_model, _body_mesh, "enemy_paint")
+	MeshKit.part(_model, _body_mesh, "enemy_duck")
 	MeshKit.part(_model, _eyes_mesh, "beetle_eyes", Vector3.ZERO, false)
 	_cull_all_parts()
 
