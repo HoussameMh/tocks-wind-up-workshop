@@ -3,6 +3,8 @@ extends RefCounted
 ## Minimal assertions and scene helpers for tests/run_tests.gd.
 
 const MAIN_SCENE := "res://src/core/main.tscn"
+const ARENA_Y := 60.0
+const ARENA_SIZE := 200.0
 
 var tree: SceneTree
 var checks := 0
@@ -42,6 +44,82 @@ func start_game() -> Main:
 	main.start_game()
 	await wait_ticks(3)
 	return main
+
+
+## Starts a run on a given campaign level, from 0, with that level's clock.
+func start_level(index: int) -> Main:
+	var main: Main = await start_game()
+	main.load_level(index)
+	main.run_state.enter_level(main.level.time_seconds)
+	await wait_ticks(3)
+	return main
+
+
+## Walks a bot along a route of steps. Each step is a Dictionary:
+##   to: a Vector3 (y ignored) or a Callable returning one
+##   radius: how close counts as arrived (default 1.0)
+##   jump: jump at the moment of arrival
+##   run: hold run on the way there
+##   wait: a Callable that must return true before arrival counts
+##   no_floor: arrival counts in the air too
+## Ends when the level is cleared or max_ticks pass. Returns the last step reached.
+func walk_route(main: Main, steps: Array[Dictionary], max_ticks: int) -> int:
+	var command := drive(main)
+	var index := 0
+	for _tick in max_ticks:
+		if main.flow.state != GameFlow.State.PLAYING:
+			break
+		command.jump_pressed = false
+		command.jump_held = true
+		var step: Dictionary = steps[mini(index, steps.size() - 1)]
+		var target: Vector3 = step["to"].call() if step["to"] is Callable else step["to"]
+		var to_target := target - main.player.global_position
+		to_target.y = 0.0
+		var distance := to_target.length()
+		var waiting: bool = step.has("wait") and not step["wait"].call()
+		var radius: float = step.get("radius", 1.0)
+		command.run = step.get("run", false)
+		# Holds station at a waypoint rather than wandering off an edge while it waits.
+		if waiting and distance < radius * 0.5:
+			command.move = Vector3.ZERO
+		elif distance > 0.05:
+			command.move = to_target.normalized()
+		else:
+			command.move = Vector3.ZERO
+		var grounded: bool = main.player.is_on_floor() or step.get("no_floor", false)
+		if distance < radius and grounded and not waiting:
+			command.jump_pressed = step.get("jump", false)
+			index += 1
+		await wait_ticks(1)
+	return index
+
+
+## Starts a run with level 1's enemies gone and Tock on a large clear slab above the course.
+## Nothing on the slab but what a test adds, so a test can place enemies freely.
+func start_arena() -> Main:
+	var main: Main = await start_game()
+	main.level.remove_enemies()
+	await tree.process_frame
+	add_slab(main, Vector3(0.0, ARENA_Y - 1.0, 0.0), Vector3(ARENA_SIZE, 2.0, ARENA_SIZE))
+	main.player.global_position = Vector3(0.0, ARENA_Y + 0.2, 0.0)
+	main.player.velocity = Vector3.ZERO
+	main.camera.snap_to_target()
+	await wait_until(func() -> bool: return main.player.is_on_floor(), 60)
+	return main
+
+
+## Adds a solid box to the level.
+func add_slab(main: Main, center: Vector3, size: Vector3) -> StaticBody3D:
+	var slab := StaticBody3D.new()
+	slab.collision_layer = Player.LAYER_WORLD
+	slab.position = center
+	var shape := BoxShape3D.new()
+	shape.size = size
+	var collider := CollisionShape3D.new()
+	collider.shape = shape
+	slab.add_child(collider)
+	main.level.add_child(slab)
+	return slab
 
 
 func stop_game(main: Main) -> void:

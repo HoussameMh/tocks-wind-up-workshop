@@ -1,0 +1,129 @@
+{
+  "name": "Toolbox Tumble",
+  "spawn": [0, 0.2, 4],
+  "time_seconds": 270,
+  "lamp_z": [-30, -120, -205],
+  "quip_clear": "Righty tighty, lefty you survived.",
+  "quip_over": "You have been filed under Miscellaneous Fasteners.",
+  "palette": {
+    "tray": { "material": "tray_steel", "edge": "steel_trim", "kind": "bench" },
+    "walnut": { "material": "shelf_walnut", "edge": "bench_edge", "kind": "bench" },
+    "yellow": { "material": "toy_paint", "paint": "#c9971f", "kind": "block" },
+    "steel": { "material": "platform_steel", "edge": "steel_trim" }
+  },
+  "platforms": [
+    { "center": [0, -1, -9], "size": [12, 2, 34], "color": "tray" },
+    { "center": [0, -5, -31], "size": [12, 2, 10], "color": "walnut" },
+    { "center": [0, -1, -48], "size": [10, 2, 24], "color": "tray" },
+    { "center": [0, 5, -83], "size": [10, 2, 26], "color": "tray" },
+    { "center": [-11, 5, -82], "size": [6, 2, 8], "color": "walnut" },
+    { "center": [0, 5, -118.5], "size": [4, 2, 3], "color": "tray" },
+    { "center": [0, 5, -136.5], "size": [12, 2, 27], "color": "tray" },
+    { "center": [0, 5, -172], "size": [10, 2, 28], "color": "tray" },
+    { "center": [0, 0, -212.5], "size": [14, 2, 35], "color": "tray" },
+    { "center": [0, 1.5, -226], "size": [4, 1, 4], "color": "yellow" }
+  ],
+  "moving_platforms": [
+    { "a": [0, -0.25, -29.5], "b": [0, -0.25, -32.5], "size": [3, 0.5, 6], "speed": 2.0, "color": "steel", "screw": false, "visual": "wrench" },
+    { "a": [0, -0.25, -65], "b": [0, 5.75, -65], "size": [4, 0.5, 4], "speed": 2.5, "color": "steel", "screw": false, "visual": "wrench" },
+    { "a": [-7, 6.5, -88], "b": [7, 6.5, -88], "size": [1, 1, 6], "speed": 4.0, "color": "steel", "screw": false, "visual": "wrench" },
+    { "a": [-3.5, 5.75, -102], "b": [3.5, 5.75, -102], "size": [4, 0.5, 6], "speed": 3.0, "color": "steel", "screw": false, "visual": "wrench" },
+    { "a": [3.5, 5.75, -111], "b": [-3.5, 5.75, -111], "size": [4, 0.5, 6], "speed": 3.0, "color": "steel", "screw": false, "visual": "wrench" },
+    { "a": [0, 5.75, -190], "b": [0, 0.75, -190], "size": [4, 0.5, 4], "speed": 3.0, "color": "steel", "screw": false, "visual": "wrench" }
+  ],
+  "blocks": [
+    { "pos": [-2, 2.7, -8], "kind": "cog" },
+    { "pos": [2, 2.7, -8], "kind": "cog" },
+    { "pos": [0, 8.7, -78], "kind": "coil", "rearm": true },
+    { "pos": [-11, 8.7, -82], "kind": "bolt" },
+    { "pos": [0, 8.7, -118.5], "kind": "life", "hidden": true },
+    { "pos": [-2, 8.7, -166], "kind": "cog" },
+    { "pos": [2, 8.7, -166], "kind": "crate" }
+  ],
+  "beetles": [
+    { "a": [-4, 0, -48], "b": [4, 0, -48], "speed": 2.0, "armored": true },
+    { "a": [-4, 6, -80], "b": [4, 6, -80], "speed": 3.0 },
+    { "a": [4, 6, -94], "b": [-4, 6, -94], "speed": 3.0 },
+    { "a": [-5, 6, -146], "b": [5, 6, -146], "speed": 2.5, "armored": true },
+    { "a": [-4, 6, -174], "b": [4, 6, -174], "speed": 3.5 },
+    { "a": [4, 6, -180], "b": [-4, 6, -180], "speed": 3.5 },
+    { "a": [-5, 1, -215], "b": [5, 1, -215], "speed": 3.0, "armored": true }
+  ],
+  "planes": [
+    { "a": [-9, 6, -138], "b": [9, 6, -138], "speed": 5.5 },
+    { "a": [-10, 1, -214], "b": [10, 1, -214], "speed": 6.0 }
+  ],
+  "ducks": [
+    { "pos": [4, 6, -142] },
+    { "pos": [-5, 1, -222] }
+  ],
+  "teeth": [
+    { "pos": [0, 0, -20] },
+    { "pos": [0, 0, -56] },
+    { "pos": [-3, 6, -132] },
+    { "pos": [3, 6, -136] },
+    { "pos": [0, 1, -208] }
+  ],
+  "cog_lines": [
+    { "from": [-3, 1, -3], "to": [3, 1, -3], "count": 4 },
+    { "from": [-3, 1, -43], "to": [3, 1, -43], "count": 3 },
+    { "from": [-2, 1, -58], "to": [2, 1, -58], "count": 2 },
+    { "from": [-3, 7, -75], "to": [3, 7, -75], "count": 3 },
+    { "from": [-3, 7, -92], "to": [3, 7, -92], "count": 3 },
+    { "from": [-4, 7, -128], "to": [4, 7, -128], "count": 3 },
+    { "from": [-2, 7, -148], "to": [2, 7, -148], "count": 2 },
+    { "from": [-3, 7, -170], "to": [3, 7, -170], "count": 4 },
+    { "from": [-3, 2, -200], "to": [3, 2, -200], "count": 2 },
+    { "from": [-3, 2, -219], "to": [3, 2, -219], "count": 2 },
+    { "from": [-13, 7, -79], "to": [-9, 7, -79], "count": 2 },
+    { "from": [-13, 7, -85], "to": [-9, 7, -85], "count": 2 }
+  ],
+  "cogs": [
+    [0, 1.5, -65], [0, 3.5, -65],
+    [-3.5, 7.5, -102], [3.5, 7.5, -111], [0, 7, -118.5]
+  ],
+  "springs": [
+    { "pos": [4, -4, -33.5], "speed": 21.0 }
+  ],
+  "checkpoints": [
+    { "pos": [-3.5, 0, -39], "respawn": [0, 0.2, -39] },
+    { "pos": [-3.5, 6, -73], "respawn": [0, 6.2, -73] },
+    { "pos": [-3.5, 6, -161], "respawn": [0, 6.2, -161] }
+  ],
+  "goal": { "pos": [0, 3.6, -226], "area_size": [5, 4, 5] },
+  "decor": [
+    { "type": "room", "min": [-24, -23, -252], "max": [65, 47, 24] },
+    { "type": "window", "pos": [64.8, 16, -114], "size": [30, 38] },
+    { "type": "counter", "x": [-24, -16], "top": -1, "floor": -23, "z": [24, -252] },
+    { "type": "pegboard", "x": -24, "y": [16, 40], "z": [23, -251] },
+    { "type": "batten", "y": 45.5, "z": -8, "width": 10 },
+    { "type": "batten", "y": 45.5, "z": -78, "width": 10 },
+    { "type": "batten", "y": 45.5, "z": -166, "width": 10 },
+    { "type": "wrench", "pos": [-23.2, 24, -10], "length": 8 },
+    { "type": "wrench", "pos": [-23.2, 24, -14], "length": 7 },
+    { "type": "hammer", "pos": [-23.2, 24, -50] },
+    { "type": "handsaw", "pos": [-23.2, 24, -92] },
+    { "type": "square", "pos": [-23.2, 24, -130] },
+    { "type": "wrench", "pos": [-23.2, 24, -170], "length": 8 },
+    { "type": "hammer", "pos": [-23.2, 24, -210] },
+    { "type": "lamp", "pos": [-14, 24, -30], "base": [-20, -1, -30] },
+    { "type": "lamp", "pos": [-14, 24, -120], "base": [-20, -1, -120] },
+    { "type": "lamp", "pos": [-14, 24, -205], "base": [-20, -1, -205] },
+    { "type": "socket", "pos": [15, -23, -12], "radius": 5, "height": 23 },
+    { "type": "socket", "pos": [14, -23, -26], "radius": 4, "height": 20 },
+    { "type": "socket", "pos": [15, -23, -38], "radius": 3, "height": 18 },
+    { "type": "giant_bolt", "pos": [13, -23, -75], "radius": 5, "height": 34 },
+    { "type": "socket", "pos": [14, -23, -120], "radius": 5, "height": 30 },
+    { "type": "socket", "pos": [15, -23, -136], "radius": 4, "height": 27 },
+    { "type": "giant_bolt", "pos": [14, -23, -172], "radius": 5, "height": 34 },
+    { "type": "giant_bolt", "pos": [15, -23, -218], "radius": 5, "height": 28 },
+    { "type": "socket", "pos": [-13, -1, -160], "radius": 2.5, "height": 7 },
+    { "type": "vise", "pos": [-20, -1, -60] },
+    { "type": "oil_can", "pos": [-20, -1, -95] },
+    { "type": "tape_measure", "pos": [-20, -1, -150] },
+    { "type": "tool_chest", "pos": [44, -23, -30] },
+    { "type": "tool_chest", "pos": [44, -23, -180] },
+    { "type": "stool", "pos": [30, -23, -105] },
+    { "type": "clock", "pos": [0, 11, -251.6], "radius": 6 }
+  ]
+}

@@ -23,7 +23,7 @@
 
 ## Out of scope — not building this
 - Any character, name, art, music or level taken from an existing game. Everything here is original.
-- Baron Rust boss fight, world map and further levels (next milestones).
+- World map (next milestone). Levels 2 to 5, the Bolt Blaster, four new enemies and the Baron Rust fight were added later: see [the expansion spec](expansion-spec.md).
 - Final art, music, save system, multiplayer and localization files.
 
 ## Build order
@@ -45,4 +45,8 @@
 |---|---|---|
 | **Tock** | Hero | Clockwork kid: brass body, teal overalls, red cap, a spinning wind-up key on the back |
 | **Gear-beetle** | Basic enemy | Rusty dome with a gear turning on its back |
-| **Baron Rust** | Villain (later milestone) | Not in this prototype |
+| **Armored beetle** | Enemy | A gear-beetle hiding under a saucepan lid: two stomps, and it panics in between |
+| **Paper-plane bomber** | Enemy | Drops erasers, then swoops low enough to stomp, looking smug |
+| **Rubber-duck sniper** | Enemy | Squeaks, inflates and spits bubbles. Blows a raspberry after |
+| **Chattering teeth** | Enemy | Wind up loudly, hop after Tock, and laugh at ledges they will not cross |
+| **Baron Rust** | Final boss, level 5 | A vain old bench vise with a moustache, a monocle and a very small hat |

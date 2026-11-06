@@ -1,0 +1,11 @@
+{
+  "levels": [
+    "res://assets/data/level_workshop_01.json",
+    "res://assets/data/level_workshop_02.json",
+    "res://assets/data/level_workshop_03.json",
+    "res://assets/data/level_workshop_04.json",
+    "res://assets/data/level_workshop_05.json"
+  ],
+  "first_level_quip_clear": "Not bad for a wind-up toy. It gets messier from here.",
+  "first_level_quip_over": "The very first bench. The beetles will talk."
+}

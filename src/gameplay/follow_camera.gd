@@ -58,6 +58,16 @@ func setup(tuning: Tuning, target: Player) -> void:
 	far = 500.0
 
 
+## Applies a level's own framing from its optional "camera" entry: pitch_degrees, focus_height and
+## distance, each optional. The boss level uses it to keep the Baron in the frame.
+func apply_framing(framing: Dictionary) -> void:
+	if framing.has("pitch_degrees"):
+		pitch = deg_to_rad(framing["pitch_degrees"])
+	_height_offset = framing.get("focus_height", _height_offset)
+	_distance = framing.get("distance", _distance)
+	snap_to_target()
+
+
 ## Jumps straight to the target, for respawning.
 func snap_to_target() -> void:
 	_focus = _focus_goal()

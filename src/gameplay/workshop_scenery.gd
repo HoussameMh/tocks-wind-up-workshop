@@ -12,6 +12,14 @@ const PEGBOARD_RAIL := 0.5
 const WINDOW_CELLS_Y := 6
 const WINDOW_FRAME := 1.0
 const WINDOW_MUNTIN := 0.5
+const OVERLAY_PROUD := 0.008
+const PENCIL_ERASER_LENGTH := 1.6
+const PENCIL_FERRULE_LENGTH := 0.7
+const PENCIL_TIP_LENGTH := 2.4
+const PENCIL_POINT_LENGTH := 0.9
+const RULER_WIDTH := 1.5
+const RULER_TICK_SPACING := 1.0
+const BOLT_THREADS := 9
 
 static var _baked: Array[Dictionary] = []
 static var _baked_signature := 0
@@ -76,6 +84,22 @@ static func _add_entry(group: MeshBatch.Group, entry: Dictionary) -> void:
 			_add_sawhorse(group, at)
 		"clock":
 			_add_clock(group, at, float(entry["radius"]))
+		"pencil":
+			_add_pencil(group, _vec(entry["center"]), _vec(entry["size"]))
+		"battery":
+			_add_battery(group, _vec(entry["center"]), _vec(entry["size"]))
+		"ruler":
+			_add_ruler(group, at, float(entry["length"]))
+		"paint_can":
+			_add_paint_can(group, at, float(entry["radius"]), float(entry["height"]), Look.to_color(entry["color"]))
+		"stir_stick":
+			_add_stir_stick(group, at, float(entry["height"]), Look.to_color(entry["color"]))
+		"giant_battery":
+			_add_giant_battery(group, at, float(entry["radius"]), float(entry["height"]))
+		"socket":
+			_add_socket(group, at, float(entry["radius"]), float(entry["height"]))
+		"giant_bolt":
+			_add_giant_bolt(group, at, float(entry["radius"]), float(entry["height"]))
 		_:
 			push_error("Unknown decor type: %s" % entry["type"])
 
@@ -378,6 +402,136 @@ static func _add_clock(group: MeshBatch.Group, at: Vector3, radius: float) -> vo
 		var angle := TAU * i / 12.0
 		var tick := front + Vector3(cos(angle), sin(angle), 0.0) * radius * 0.86
 		hands.add_box(tick, Vector3(0.3, 0.3, 0.1))
+
+
+## Dresses a long platform as a giant pencil, without changing its collision. Each overlay sits just
+## proud of the box. Eraser and ferrule at the near end (+z), sharpened tip at the far end.
+static func _add_pencil(group: MeshBatch.Group, center: Vector3, size: Vector3) -> void:
+	var batch := group.batch("course_prop", _zone(center.z), false)
+	var near_z := center.z + size.z * 0.5
+	var far_z := center.z - size.z * 0.5
+	var eraser := PENCIL_ERASER_LENGTH
+	var ferrule := PENCIL_FERRULE_LENGTH
+	var tip := PENCIL_TIP_LENGTH
+	var point := PENCIL_POINT_LENGTH
+	_add_overlay(batch, center, size, near_z, near_z - eraser, _prop_color("pencil_eraser"))
+	_add_overlay(batch, center, size, near_z - eraser, near_z - eraser - ferrule, _prop_color("pencil_ferrule"))
+	_add_overlay(batch, center, size, far_z + tip, far_z + point, _prop_color("pencil_wood"))
+	_add_overlay(batch, center, size, far_z + point, far_z, _prop_color("pencil_graphite"))
+	# Two darker lines along the top give the yellow body its hexagon.
+	var line_y := center.y + size.y * 0.5 + OVERLAY_PROUD
+	var line_length := size.z - eraser - ferrule - tip
+	var line_z := near_z - eraser - ferrule - line_length * 0.5
+	for side: float in [-1.0, 1.0]:
+		var line := Vector3(center.x + side * size.x * 0.22, line_y, line_z)
+		batch.add_box(line, Vector3(0.09, 0.02, line_length), 0.0, Vector2.ZERO, _prop_color("pencil_line"))
+
+
+## Dresses a small pad as a battery: a dark body, a copper top half and a terminal ring on top.
+static func _add_battery(group: MeshBatch.Group, center: Vector3, size: Vector3) -> void:
+	var batch := group.batch("course_prop", _zone(center.z), false)
+	var body := Vector3(size.x + OVERLAY_PROUD * 2.0, size.y * 0.55, size.z + OVERLAY_PROUD * 2.0)
+	var top := center.y + size.y * 0.5
+	var copper := _prop_color("battery_copper")
+	batch.add_box(Vector3(center.x, top - size.y * 0.75, center.z), Vector3(body.x, size.y * 0.55, body.z), 0.0, Vector2.ZERO, _prop_color("battery_body"))
+	batch.add_box(Vector3(center.x, top - size.y * 0.225, center.z), Vector3(body.x, size.y * 0.45, body.z), 0.0, Vector2.ZERO, copper)
+	var ring := MeshKit.cylinder(size.x * 0.3, size.x * 0.3, 0.03, 16)
+	batch.add_mesh(ring, Transform3D(Basis.IDENTITY, Vector3(center.x, top + 0.015, center.z)), _prop_color("battery_body"))
+	var plus := Vector3(center.x, top + 0.04, center.z)
+	batch.add_box(plus, Vector3(size.x * 0.28, 0.02, 0.08), 0.0, Vector2.ZERO, copper)
+	batch.add_box(plus, Vector3(0.08, 0.02, size.x * 0.28), 0.0, Vector2.ZERO, copper)
+
+
+## A wooden ruler lying along the course, from at running toward -z, with its tick marks.
+static func _add_ruler(group: MeshBatch.Group, at: Vector3, length: float) -> void:
+	var batch := group.batch("course_prop", _zone(at.z - length * 0.5), false)
+	var y := at.y + OVERLAY_PROUD
+	batch.add_box(Vector3(at.x, y, at.z - length * 0.5), Vector3(RULER_WIDTH, 0.02, length), 0.0, Vector2.ZERO, _prop_color("ruler"))
+	var tick_color := _prop_color("ruler_tick")
+	var marks := floori(length / RULER_TICK_SPACING)
+	for i in marks + 1:
+		var tick_length := RULER_WIDTH * (0.6 if i % 5 == 0 else 0.3)
+		var tick := Vector3(at.x - RULER_WIDTH * 0.5 + tick_length * 0.5, y + 0.012, at.z - i * RULER_TICK_SPACING)
+		batch.add_box(tick, Vector3(tick_length, 0.02, 0.07), 0.0, Vector2.ZERO, tick_color)
+
+
+## A tin of paint, with its label, its rim, a full top and a drip down the side toward the course.
+static func _add_paint_can(group: MeshBatch.Group, at: Vector3, radius: float, height: float, paint: Color) -> void:
+	var batch := group.batch("prop_muted", _zone(at.z))
+	var tin := _prop_color("can_tin")
+	var middle := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.5)
+	batch.add_mesh(MeshKit.cylinder(radius, radius, height, 20), middle, tin)
+	var label_at := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.48)
+	batch.add_mesh(MeshKit.cylinder(radius * 1.015, radius * 1.015, height * 0.55, 20), label_at, paint)
+	var rim_at := Transform3D(Basis.IDENTITY, at + Vector3.UP * height)
+	batch.add_mesh(MeshKit.cylinder(radius * 1.06, radius * 1.06, height * 0.04, 20), rim_at, tin.lightened(0.15))
+	var surface := Transform3D(Basis.IDENTITY, at + Vector3.UP * (height + height * 0.022))
+	batch.add_mesh(MeshKit.cylinder(radius * 0.94, radius * 0.94, height * 0.01, 20), surface, paint)
+	for offset: float in [-0.28, 0.0, 0.3]:
+		var drip_length := height * (0.28 - absf(offset) * 0.4)
+		var side := Vector3(-cos(offset) * radius * 1.025, height - drip_length * 0.5, sin(offset) * radius * 1.025)
+		batch.add_box(at + side, Vector3(0.14, drip_length, radius * 0.1), 0.0, Vector2.ZERO, paint)
+	_add_prop_occlusion(group, at, Vector2(radius, radius) * 1.15)
+
+
+## A long flat stir stick standing up, its lower half dipped in paint.
+static func _add_stir_stick(group: MeshBatch.Group, at: Vector3, height: float, paint: Color) -> void:
+	var batch := group.batch("prop_muted", _zone(at.z))
+	var wood := _prop_color("stir_wood")
+	batch.add_box(at + Vector3.UP * height * 0.72, Vector3(0.3, height * 0.56, 1.6), 0.0, Vector2.ZERO, wood)
+	batch.add_box(at + Vector3.UP * height * 0.22, Vector3(0.34, height * 0.44, 1.64), 0.0, Vector2.ZERO, paint)
+
+
+## A huge battery standing on end, the kind the junk drawer's pads are small copies of.
+static func _add_giant_battery(group: MeshBatch.Group, at: Vector3, radius: float, height: float) -> void:
+	var batch := group.batch("prop_muted", _zone(at.z))
+	var lower := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.3)
+	batch.add_mesh(MeshKit.cylinder(radius, radius, height * 0.6, 20), lower, _prop_color("battery_body"))
+	var upper := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.8)
+	batch.add_mesh(MeshKit.cylinder(radius, radius, height * 0.4, 20), upper, _prop_color("battery_copper"))
+	var nub := Transform3D(Basis.IDENTITY, at + Vector3.UP * (height + height * 0.03))
+	batch.add_mesh(MeshKit.cylinder(radius * 0.35, radius * 0.35, height * 0.06, 14), nub, _prop_color("pencil_ferrule"))
+	_add_prop_occlusion(group, at, Vector2(radius, radius) * 1.15)
+
+
+## A socket from a socket set: a hexagon outside, dark inside.
+static func _add_socket(group: MeshBatch.Group, at: Vector3, radius: float, height: float) -> void:
+	var batch := group.batch("prop_muted", _zone(at.z))
+	var steel := _prop_color("socket_steel")
+	var body := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.5)
+	batch.add_mesh(MeshKit.cylinder(radius, radius, height, 6), body, steel)
+	var hole := Transform3D(Basis.IDENTITY, at + Vector3.UP * (height + 0.01))
+	batch.add_mesh(MeshKit.cylinder(radius * 0.68, radius * 0.68, 0.04, 6), hole, _prop_color("socket_hole"))
+	var band := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.25)
+	batch.add_mesh(MeshKit.cylinder(radius * 1.02, radius * 1.02, height * 0.06, 6), band, steel.darkened(0.25))
+	_add_prop_occlusion(group, at, Vector2(radius, radius) * 1.1)
+
+
+## A giant bolt standing on its thread, hexagon head up.
+static func _add_giant_bolt(group: MeshBatch.Group, at: Vector3, radius: float, height: float) -> void:
+	var batch := group.batch("prop_muted", _zone(at.z))
+	var steel := _prop_color("socket_steel")
+	var shaft := radius * 0.6
+	var shaft_at := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.42)
+	batch.add_mesh(MeshKit.cylinder(shaft, shaft, height * 0.84, 14), shaft_at, steel.darkened(0.1))
+	for i in BOLT_THREADS:
+		var thread_y := height * 0.84 * (i + 0.5) / BOLT_THREADS
+		var thread := Transform3D(Basis.IDENTITY, at + Vector3.UP * thread_y)
+		batch.add_mesh(MeshKit.cylinder(shaft * 1.12, shaft * 1.12, height * 0.018, 14), thread, steel)
+	var head := Transform3D(Basis.IDENTITY, at + Vector3.UP * height * 0.92)
+	batch.add_mesh(MeshKit.cylinder(radius, radius, height * 0.16, 6), head, steel)
+	_add_prop_occlusion(group, at, Vector2(radius, radius))
+
+
+## A colored sleeve round part of a platform's length, from z_a to z_b.
+static func _add_overlay(batch: MeshBatch, center: Vector3, size: Vector3, z_a: float, z_b: float, color: Color) -> void:
+	var at := Vector3(center.x, center.y, (z_a + z_b) * 0.5)
+	var sleeve := Vector3(size.x + OVERLAY_PROUD * 2.0, size.y + OVERLAY_PROUD * 2.0, absf(z_a - z_b))
+	batch.add_box(at, sleeve, 0.0, Vector2.ZERO, color)
+
+
+static func _prop_color(key: String) -> Color:
+	return Look.color("scenery", "prop_colors", key)
 
 
 static func _add_prop_occlusion(group: MeshBatch.Group, at: Vector3, radius: Vector2) -> void:

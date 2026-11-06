@@ -19,6 +19,8 @@ static var _shared_meshes: Dictionary = {}
 var kind := ""
 var is_hidden_block := false
 var used := false
+## A rearm box becomes fresh each time Tock respawns.
+var rearms := false
 
 var _visual: Node3D
 var _busy := false
@@ -66,6 +68,23 @@ func bump(coiled: bool) -> void:
 	_show_used()
 	_wobble()
 	reward_released.emit(kind, position)
+
+
+## Bolt contract, design/expansion-spec.md section 3: a crate breaks. A toy box or hidden box
+## only clinks, because only head bumps open boxes; the bolt plays that clink itself.
+func bolt_hit() -> void:
+	if kind == KIND_CRATE and collision_layer != 0:
+		_break_crate()
+
+
+## Makes a used box fresh again. Spec section 2: the re-arm rule.
+func rearm() -> void:
+	if not used:
+		return
+	used = false
+	for child in _visual.get_children():
+		child.queue_free()
+	_build_toy_box("toy_box_body", true)
 
 
 func _reveal() -> void:

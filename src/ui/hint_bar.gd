@@ -22,24 +22,19 @@ func keys() -> Array[String]:
 	return _keys
 
 
-## Shows the in-game controls for a device.
-func show_play_hints(kind: InputDeviceTracker.Kind) -> void:
-	if kind == InputDeviceTracker.Kind.GAMEPAD:
-		_show([
-			[tr("Left Stick"), tr("Move")],
-			[tr("A"), tr("Jump")],
-			[tr("X"), tr("Run")],
-			[tr("Right Stick"), tr("Camera")],
-			[tr("Start"), tr("Pause")],
-		])
-	else:
-		_show([
-			[tr("WASD"), tr("Move")],
-			[tr("Space"), tr("Jump")],
-			[tr("Shift"), tr("Run")],
-			[tr("Mouse"), tr("Camera")],
-			[tr("Esc"), tr("Pause")],
-		])
+## Shows the in-game controls for a device. can_fire adds the Fire hint while Tock has the Blaster.
+func show_play_hints(kind: InputDeviceTracker.Kind, can_fire := false) -> void:
+	var pad := kind == InputDeviceTracker.Kind.GAMEPAD
+	var pairs: Array = [
+		[tr("Left Stick") if pad else tr("WASD"), tr("Move")],
+		[tr("A") if pad else tr("Space"), tr("Jump")],
+		[tr("X") if pad else tr("Shift"), tr("Run")],
+	]
+	if can_fire:
+		pairs.append([tr("RB") if pad else tr("F"), tr("Fire")])
+	pairs.append([tr("Right Stick") if pad else tr("Mouse"), tr("Camera")])
+	pairs.append([tr("Start") if pad else tr("Esc"), tr("Pause")])
+	_show(pairs)
 
 
 ## Shows the menu controls for a device. An empty back_text leaves the back hint out.

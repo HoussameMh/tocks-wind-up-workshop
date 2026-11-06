@@ -43,12 +43,16 @@
     "toy_box": { "ribbon": "#f4e8cf", "twine": "#2a2320", "crate_frame_shade": "#a3a3a8", "lid": "#7d1c4e", "used_lid": "#5b5550" },
     "prop_colors": {
       "oil_can": "#6f7560", "spool_wood": "#8a7458", "spool_thread": "#6b6f78", "tape_measure": "#66685f",
-      "chest_body": "#4a4f52", "chest_pull": "#8a8d8c", "stool": "#5e4d3b", "sawhorse": "#6b5a44"
+      "chest_body": "#4a4f52", "chest_pull": "#8a8d8c", "stool": "#5e4d3b", "sawhorse": "#6b5a44",
+      "pencil_eraser": "#e87d94", "pencil_ferrule": "#b7bcc0", "pencil_wood": "#d9b483", "pencil_graphite": "#2c2a2a", "pencil_line": "#a27a18",
+      "battery_body": "#26282b", "battery_copper": "#c9772f", "ruler": "#a98b5c", "ruler_tick": "#2e2a24",
+      "can_tin": "#8d9398", "stir_wood": "#c8a878", "socket_steel": "#9aa3a9", "socket_hole": "#17181a"
     },
     "occlusion": { "wall_base_height": 7.0, "wall_base_alpha": 0.55, "prop_alpha": 0.6, "under_counter_height": 14.0, "under_counter_alpha": 0.85 }
   },
   "texture_adjust": {
-    "wood_table_001": [1.1, 0.8, 0.62]
+    "wood_table_001": [1.1, 0.8, 0.62],
+    "metal_plate": [1.1, 0.9, 0.3]
   },
   "materials": {
     "bench_oak": {
@@ -84,6 +88,10 @@
       "texture_set": "metal_plate", "maps": "dnr", "tint": [1.5, 1.5, 1.4],
       "metallic": 0.6, "roughness": 1.0, "normal_scale": 0.5, "uv_per_unit": 0.125
     },
+    "tray_steel": {
+      "texture_set": "metal_plate", "maps": "dnr", "tint": [1.15, 1.2, 1.3],
+      "metallic": 0.5, "roughness": 1.0, "normal_scale": 0.35, "uv_per_unit": 0.28
+    },
     "steel_trim": { "tint": "#c9ced2", "metallic": 0.6, "roughness": 0.4 },
     "rod_steel": { "tint": "#8f969c", "metallic": 0.6, "roughness": 0.45 },
     "beetle_shell": {
@@ -94,6 +102,21 @@
     "beetle_gear": { "tint": "#e6eaec", "metallic": 0.5, "roughness": 0.3 },
     "beetle_eyes": { "tint": "#ff7a1a", "roughness": 0.5, "emission": "#ff5a10", "emission_energy": 1.1 },
     "beetle_legs": { "tint": "#2b2523", "roughness": 0.7 },
+    "enemy_paint": { "vertex_color": true, "roughness": 0.45 },
+    "enemy_paper": { "vertex_color": true, "roughness": 0.7, "emission": "#8a867a", "emission_energy": 0.55 },
+    "enemy_bubble": { "tint": [0.82, 0.92, 1.0, 0.45], "alpha": true, "roughness": 0.1, "specular": 0.8 },
+    "paint_spill": { "tint": "#2f6fe0", "roughness": 0.12, "specular": 0.8 },
+    "rubber_band": { "tint": "#d9483b", "roughness": 0.7 },
+    "boss_casting": { "tint": "#4d5a4e", "metallic": 0.4, "roughness": 0.55 },
+    "boss_rust": {
+      "texture_set": "rust_coarse_01", "maps": "dnr", "tint": [1.25, 1.05, 0.95],
+      "metallic": 0.3, "roughness": 1.0, "normal_scale": 0.8, "mesh_uv": [2, 1],
+      "emission": "#7a3214", "emission_energy": 0.45
+    },
+    "boss_dark": { "tint": "#25221f", "roughness": 0.5 },
+    "boss_spring": { "tint": "#ffb020", "metallic": 0.5, "roughness": 0.3, "emission": "#ff7a1a", "emission_energy": 0.45 },
+    "boss_hazard": { "tint": "#ff7a1a", "unshaded": true, "no_fog": true },
+    "boss_marker": { "vertex_color": true, "unshaded": true, "alpha": true, "no_fog": true },
     "toy_box_body": { "tint": "#b02a6e", "roughness": 0.3 },
     "toy_box_used": { "tint": "#77706a", "roughness": 0.85 },
     "box_trim": { "vertex_color": true, "roughness": 0.6 },
@@ -135,6 +158,7 @@
     "jar_glass": { "tint": [0.8, 0.86, 0.85, 0.18], "alpha": true, "roughness": 0.15, "render_layer": 2, "cull_distance": 80.0 },
     "jar_lid": { "tint": "#5e625f", "metallic": 0.5, "roughness": 0.5, "render_layer": 2, "cull_distance": 80.0 },
     "vise_casting": { "tint": "#4d5a4e", "metallic": 0.3, "roughness": 0.6, "render_layer": 2, "cull_distance": 90.0 },
+    "course_prop": { "vertex_color": true, "roughness": 0.55 },
     "prop_muted": { "vertex_color": true, "roughness": 0.65, "render_layer": 2, "cull_distance": 110.0 },
     "clock_face": { "tint": "#b8b09c", "roughness": 0.6, "render_layer": 2 },
     "clock_hands": { "tint": "#25221f", "roughness": 0.5, "render_layer": 2 }

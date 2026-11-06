@@ -4,8 +4,8 @@ extends RefCounted
 
 signal state_changed(state: State, previous: State)
 
-enum State { TITLE, PLAYING, PAUSED, LIFE_LOST, LEVEL_CLEAR, GAME_OVER }
-enum Trigger { START, PAUSE, RESUME, QUIT, DIE, RESPAWN, OUT_OF_LIVES, CLEAR }
+enum State { TITLE, PLAYING, PAUSED, LIFE_LOST, LEVEL_CLEAR, GAME_OVER, VICTORY }
+enum Trigger { START, PAUSE, RESUME, QUIT, DIE, RESPAWN, OUT_OF_LIVES, CLEAR, NEXT, RETRY, WIN }
 
 const TRANSITIONS := {
 	State.TITLE: { Trigger.START: State.PLAYING },
@@ -13,6 +13,7 @@ const TRANSITIONS := {
 		Trigger.PAUSE: State.PAUSED,
 		Trigger.DIE: State.LIFE_LOST,
 		Trigger.CLEAR: State.LEVEL_CLEAR,
+		Trigger.WIN: State.VICTORY,
 	},
 	State.PAUSED: {
 		Trigger.RESUME: State.PLAYING,
@@ -23,8 +24,9 @@ const TRANSITIONS := {
 		Trigger.RESPAWN: State.PLAYING,
 		Trigger.OUT_OF_LIVES: State.GAME_OVER,
 	},
-	State.LEVEL_CLEAR: { Trigger.START: State.PLAYING, Trigger.QUIT: State.TITLE },
-	State.GAME_OVER: { Trigger.START: State.PLAYING, Trigger.QUIT: State.TITLE },
+	State.LEVEL_CLEAR: { Trigger.NEXT: State.PLAYING, Trigger.QUIT: State.TITLE },
+	State.GAME_OVER: { Trigger.RETRY: State.PLAYING, Trigger.START: State.PLAYING, Trigger.QUIT: State.TITLE },
+	State.VICTORY: { Trigger.START: State.PLAYING, Trigger.QUIT: State.TITLE },
 }
 
 var state: State = State.TITLE

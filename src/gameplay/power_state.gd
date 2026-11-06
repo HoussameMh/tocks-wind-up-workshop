@@ -1,19 +1,23 @@
 class_name PowerState
 extends RefCounted
-## Tock's form and temporary invulnerability. Implements design/game-brief.md.
+## Tock's form and temporary invulnerability. Implements design/game-brief.md and the form
+## table in design/expansion-spec.md section 3: each hit removes the top item.
 ##
 ## States:
-##   SMALL  - starting form; a hit is fatal.
-##   COILED - Coil Spring collected; a hit returns to SMALL.
-##   BROKEN - out of the current life; only reset() leaves it.
+##   SMALL   - starting form; a hit is fatal.
+##   COILED  - Coil Spring collected; a hit returns to SMALL.
+##   BLASTER - coiled body plus Bolt Blaster; a hit returns to COILED. To make a hit in BLASTER
+##             drop further, change the one Event.HIT cell below (the spec marks it as open).
+##   BROKEN  - out of the current life; only reset() leaves it.
 
-enum Form { SMALL, COILED, BROKEN }
-enum Event { PICKUP, HIT }
+enum Form { SMALL, COILED, BLASTER, BROKEN }
+enum Event { COIL_PICKUP, BOLT_PICKUP, HIT }
 enum HitResult { IGNORED, SHRUNK, FATAL }
 
 const TRANSITIONS := {
-	Form.SMALL: { Event.PICKUP: Form.COILED, Event.HIT: Form.BROKEN },
-	Form.COILED: { Event.PICKUP: Form.COILED, Event.HIT: Form.SMALL },
+	Form.SMALL: { Event.COIL_PICKUP: Form.COILED, Event.BOLT_PICKUP: Form.BLASTER, Event.HIT: Form.BROKEN },
+	Form.COILED: { Event.COIL_PICKUP: Form.COILED, Event.BOLT_PICKUP: Form.BLASTER, Event.HIT: Form.SMALL },
+	Form.BLASTER: { Event.COIL_PICKUP: Form.BLASTER, Event.BOLT_PICKUP: Form.BLASTER, Event.HIT: Form.COILED },
 	Form.BROKEN: {},
 }
 
@@ -36,13 +40,19 @@ func is_invulnerable() -> bool:
 	return invulnerable_left > 0.0
 
 
+## True in every form with the coiled body: taller jump, larger collider, breaks crates.
+func has_coil_body() -> bool:
+	return form == Form.COILED or form == Form.BLASTER
+
+
 ## Applies a Coil Spring. Returns true if the form changed.
 func apply_pickup() -> bool:
-	var next: Variant = TRANSITIONS[form].get(Event.PICKUP)
-	if next == null or next == form:
-		return false
-	form = next
-	return true
+	return _apply_pickup_event(Event.COIL_PICKUP)
+
+
+## Applies a Bolt Blaster. Returns true if the form changed.
+func apply_bolt_pickup() -> bool:
+	return _apply_pickup_event(Event.BOLT_PICKUP)
 
 
 ## Applies a hit, honoring invulnerability.
@@ -56,7 +66,21 @@ func apply_hit() -> HitResult:
 	return HitResult.SHRUNK
 
 
+## Sets the form Tock enters a new level with. A broken Tock enters small.
+func restore(carried: Form) -> void:
+	form = Form.SMALL if carried == Form.BROKEN else carried
+	invulnerable_left = 0.0
+
+
 ## Returns to the starting form for a new life.
 func reset() -> void:
 	form = Form.SMALL
 	invulnerable_left = 0.0
+
+
+func _apply_pickup_event(event: Event) -> bool:
+	var next: Variant = TRANSITIONS[form].get(event)
+	if next == null or next == form:
+		return false
+	form = next
+	return true

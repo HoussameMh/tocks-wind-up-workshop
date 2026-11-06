@@ -58,7 +58,8 @@ static func _bake(data: Dictionary, palette: Dictionary) -> Array[Dictionary]:
 		elif not _rests_on_bench(center, size, platforms, palette):
 			_add_rod(group.batch("rod_steel", zone, false), center, size)
 	for entry: Dictionary in data["moving_platforms"]:
-		_add_lead_screw(group, _vec(entry["a"]), _vec(entry["b"]), _vec(entry["size"]), zone_length)
+		if entry.get("screw", true):
+				_add_lead_screw(group, _vec(entry["a"]), _vec(entry["b"]), _vec(entry["size"]), zone_length)
 	return group.bake()
 
 

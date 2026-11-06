@@ -11,6 +11,8 @@ const STRIDE_RATE := 15.0
 const KEY_SPIN_IDLE := 1.5
 const KEY_SPIN_RUN := 14.0
 const GROW_RATE := 10.0
+const BARREL_OFFSET := Vector3(0.0, -0.42, 0.0)
+const BARREL_ARM_POSE := -PI / 2.0
 
 static var _meshes: Dictionary = {}
 
@@ -20,6 +22,8 @@ var _left_arm: Node3D
 var _right_arm: Node3D
 var _key: Node3D
 var _springs: Node3D
+var _barrel: MeshInstance3D
+var _has_blaster := false
 var _stride := 0.0
 var _target_scale := 1.0
 var _coiled_scale := 1.0
@@ -42,6 +46,15 @@ func _init(coiled_scale: float) -> void:
 	_key.position = Vector3(0.0, 0.55, -0.42)
 	_key.rotation.y = PI
 	_build_springs()
+	# Hangs off the arm's end; the held-out pose in animate() points it forward. One draw, no shadow.
+	_barrel = MeshKit.part(_right_arm, _meshes["barrel"], "steel_trim", BARREL_OFFSET, false)
+	_barrel.visible = false
+
+
+## Shows the barrel and holds the arm out while the Bolt Blaster is carried.
+func set_blaster(has_blaster: bool) -> void:
+	_has_blaster = has_blaster
+	_barrel.visible = has_blaster
 
 
 ## Switches between forms; the size change is animated.
@@ -56,6 +69,7 @@ func reset_pose() -> void:
 	scale = Vector3.ONE
 	visible = true
 	_springs.visible = false
+	set_blaster(false)
 
 
 ## speed_ratio is 0 at rest and 1 at full run.
@@ -75,10 +89,13 @@ func animate(delta: float, speed_ratio: float, grounded: bool, velocity_y: float
 		_right_leg.rotation.x = 0.4
 		_left_arm.rotation.x = air_pose
 		_right_arm.rotation.x = air_pose
+	if _has_blaster:
+		_right_arm.rotation.x = BARREL_ARM_POSE
 
 
 ## Builds the shared meshes once. Parts with the same material are merged, so Tock costs
-## at most 11 draw calls: five body parts, four limbs, the key and the coiled form's springs.
+## at most 12 draw calls: five body parts, four limbs, the key, the coiled form's springs
+## and the blaster's barrel.
 static func _bake_meshes() -> void:
 	if not _meshes.is_empty():
 		return
@@ -87,6 +104,12 @@ static func _bake_meshes() -> void:
 	_meshes["head"] = MeshKit.sphere(0.23)
 	_meshes["leg"] = _limb_mesh(0.1, 0.3)
 	_meshes["arm"] = _limb_mesh(0.075, 0.32)
+
+	var barrel := MeshBatch.new()
+	barrel.add_mesh(MeshKit.cylinder(0.1, 0.1, 0.42, 10))
+	barrel.add_mesh(MeshKit.cylinder(0.16, 0.16, 0.09, 6), Transform3D(Basis.IDENTITY, Vector3.DOWN * 0.17))
+	barrel.add_mesh(MeshKit.cylinder(0.16, 0.16, 0.07, 6), Transform3D(Basis.IDENTITY, Vector3.UP * 0.17))
+	_meshes["barrel"] = barrel.commit()
 
 	var cap_dome := SphereMesh.new()
 	cap_dome.radius = 0.25

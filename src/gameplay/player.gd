@@ -6,7 +6,9 @@ extends CharacterBody3D
 signal jumped
 signal hurt
 signal died
-signal form_changed(coiled: bool)
+signal form_changed(form: PowerState.Form)
+## A power-up arrived with nothing to upgrade, which the run turns into score.
+signal power_spare
 
 
 ## One tick of intent, from input or from a test bot.
@@ -16,26 +18,37 @@ class Command:
 	var jump_pressed := false
 	var jump_held := false
 	var run := false
+	## True while the trigger is down. Firing repeats at the blaster's cooldown.
+	var fire_pressed := false
 
 
 const LAYER_WORLD := 1
 const LAYER_PLAYER := 2
 const LAYER_HIDDEN := 4
+## Walls round the boss arena that stop Tock but nothing else.
+const LAYER_ARENA_WALL := 8
 const SHADOW_RAY_LENGTH := 40.0
 const SHADOW_LIFT := 0.03
 const BLINK_RATE := 16.0
 const HEAD_BUMP_NORMAL_Y := -0.5
 const FACING_COURSE_YAW := PI
+const MOVE_INPUT_EPSILON := 0.01
 
 ## Set by tests to replace player input. Must return a Command.
 var bot_control := Callable()
-## Input and damage are ignored while false.
-var controls_enabled := false
+## Input and damage are ignored while false. Entering play starts the blaster's fire grace.
+var controls_enabled := false:
+	set(value):
+		if value and not controls_enabled and blaster != null:
+			blaster.begin_grace()
+		controls_enabled = value
 ## Set by the camera; movement is relative to this.
 var camera_yaw := 0.0
 ## Vertical speed just before the latest physics move, used to detect stomps.
 var fall_velocity_y := 0.0
 var alive := true
+## Fire rate, bolts and targeting. Exposed so its signals can be connected.
+var blaster: BoltBlaster
 
 var _power: PowerState
 var _assist: JumpAssist
@@ -45,6 +58,8 @@ var _collider: CollisionShape3D
 var _shadow: MeshInstance3D
 var _command := Command.new()
 var _can_cut_jump := false
+## Feet height before each of the latest moves, newest first. See recent_feet_y.
+var _feet_history := PackedFloat32Array([0.0, 0.0, 0.0])
 
 var _walk_speed := 0.0
 var _run_speed := 0.0
@@ -64,6 +79,10 @@ var _hurt_bounce := 0.0
 var _height_small := 0.0
 var _height_coiled := 0.0
 var _kill_height := 0.0
+var _respawn_invulnerable := 0.0
+var _paint_acceleration := 0.0
+var _paint_deceleration := 0.0
+var _paint_overlaps := 0
 
 
 ## Reads tuning and builds the body. Call before adding to the tree.
@@ -86,6 +105,9 @@ func setup(tuning: Tuning) -> void:
 	_height_small = tuning.num("player", "capsule_height_small")
 	_height_coiled = tuning.num("player", "capsule_height_coiled")
 	_kill_height = tuning.num("player", "kill_height")
+	_respawn_invulnerable = tuning.num("run", "respawn_invulnerable_seconds")
+	_paint_acceleration = tuning.num("paint", "ground_acceleration")
+	_paint_deceleration = tuning.num("paint", "ground_deceleration")
 
 	_power = PowerState.new(tuning.num("player", "invulnerable_seconds"))
 	_assist = JumpAssist.new(
@@ -107,13 +129,46 @@ func setup(tuning: Tuning) -> void:
 	_model.rotation.y = FACING_COURSE_YAW
 	add_child(_model)
 
+	blaster = BoltBlaster.new()
+	blaster.setup(tuning)
+	add_child(blaster)
+
 	_shadow = MeshKit.blob(self, Look.num("readability", "blob", "radius"))
 	_shadow.top_level = true
 	add_child(Look.omni("follow", Vector3.UP * Look.num("lights", "follow", "height")))
 
 
+## True in every form with the coiled body, BLASTER included.
 func is_coiled() -> bool:
-	return _power.form == PowerState.Form.COILED
+	return _power.has_coil_body()
+
+
+## The current form, for listeners that join late and for tests.
+func form() -> PowerState.Form:
+	return _power.form
+
+
+## World-space box around the capsule, for hazards that do their own contact checks.
+func contact_bounds() -> AABB:
+	var radius := _capsule.radius
+	return AABB(
+		global_position - Vector3(radius, 0.0, radius),
+		Vector3(radius * 2.0, _capsule.height, radius * 2.0)
+	)
+
+
+## The highest Tock's feet were in the last three moves. Area overlaps report up to two ticks after
+## the bodies meet, so the oldest entry is from before first contact, which holds at any fall speed.
+func recent_feet_y() -> float:
+	return maxf(_feet_history[0], maxf(_feet_history[1], _feet_history[2]))
+
+
+## The flat way a bolt would leave: move input immediately, else where the model faces.
+## Implements design/expansion-spec.md section 3, aiming step 1.
+func aim_direction() -> Vector3:
+	if _command.move.length_squared() > MOVE_INPUT_EPSILON:
+		return Vector3(_command.move.x, 0.0, _command.move.z).normalized()
+	return Vector3(sin(_model.rotation.y), 0.0, cos(_model.rotation.y))
 
 
 func is_invulnerable() -> bool:
@@ -132,10 +187,14 @@ func _physics_process(delta: float) -> void:
 	_update_horizontal(delta, on_floor)
 	_update_vertical(delta, on_floor)
 	fall_velocity_y = velocity.y
-	collision_mask = LAYER_WORLD | (LAYER_HIDDEN if velocity.y > 0.0 else 0)
+	_feet_history[2] = _feet_history[1]
+	_feet_history[1] = _feet_history[0]
+	_feet_history[0] = global_position.y
+	collision_mask = LAYER_WORLD | LAYER_ARENA_WALL | (LAYER_HIDDEN if velocity.y > 0.0 else 0)
 	move_and_slide()
 	_bump_blocks()
 	_update_visuals(delta)
+	blaster.tick(delta, _command.fire_pressed, global_position, aim_direction())
 	if global_position.y < _kill_height:
 		die()
 
@@ -144,6 +203,27 @@ func _physics_process(delta: float) -> void:
 func apply_power_up() -> void:
 	if _power.apply_pickup():
 		_apply_form()
+	elif _power.form != PowerState.Form.BROKEN:
+		power_spare.emit()
+
+
+## Gives the Bolt Blaster.
+func apply_blaster_power() -> void:
+	if _power.apply_bolt_pickup():
+		_apply_form()
+	elif _power.form != PowerState.Form.BROKEN:
+		power_spare.emit()
+
+
+## Sets the form Tock carries into a new level.
+func restore_form(carried: PowerState.Form) -> void:
+	_power.restore(carried)
+	_apply_form()
+
+
+## Called by a paint spill as Tock enters or leaves it. Spills can overlap, so this counts.
+func set_on_paint(entered: bool) -> void:
+	_paint_overlaps = maxi(_paint_overlaps + (1 if entered else -1), 0)
 
 
 ## Bounces after a stomp; higher if jump is held.
@@ -180,6 +260,8 @@ func die() -> void:
 	alive = false
 	velocity = Vector3.ZERO
 	_shadow.visible = false
+	blaster.clear_bolts()
+	blaster.set_armed(false)
 	var tween := create_tween()
 	tween.tween_property(_model, "scale", Vector3.ONE * 0.01, 0.25)
 	died.emit()
@@ -190,12 +272,16 @@ func respawn(at: Vector3) -> void:
 	global_position = at
 	velocity = Vector3.ZERO
 	fall_velocity_y = 0.0
+	_feet_history.fill(at.y)
 	alive = true
 	_power.reset()
+	_power.invulnerable_left = _respawn_invulnerable
 	_apply_collider_height(_height_small)
 	_model.reset_pose()
 	_model.rotation.y = FACING_COURSE_YAW
-	form_changed.emit(false)
+	blaster.clear_bolts()
+	blaster.set_armed(false)
+	form_changed.emit(_power.form)
 
 
 func _read_command() -> void:
@@ -204,6 +290,7 @@ func _read_command() -> void:
 		_command.jump_pressed = false
 		_command.jump_held = false
 		_command.run = false
+		_command.fire_pressed = false
 		return
 	if bot_control.is_valid():
 		_command = bot_control.call()
@@ -213,6 +300,7 @@ func _read_command() -> void:
 	_command.jump_pressed = Input.is_action_just_pressed("jump")
 	_command.jump_held = Input.is_action_pressed("jump")
 	_command.run = Input.is_action_pressed("run")
+	_command.fire_pressed = Input.is_action_pressed("fire")
 
 
 func _update_horizontal(delta: float, on_floor: bool) -> void:
@@ -220,7 +308,11 @@ func _update_horizontal(delta: float, on_floor: bool) -> void:
 	var target := _command.move.limit_length(1.0) * top_speed
 	var rate := _air_acceleration
 	if on_floor:
-		rate = _ground_acceleration if target.length_squared() > 0.0 else _ground_deceleration
+		var moving := target.length_squared() > 0.0
+		if _paint_overlaps > 0:
+			rate = _paint_acceleration if moving else _paint_deceleration
+		else:
+			rate = _ground_acceleration if moving else _ground_deceleration
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(target, rate * delta)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
@@ -252,7 +344,7 @@ func _bump_blocks() -> void:
 
 func _update_visuals(delta: float) -> void:
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
-	if _command.move.length_squared() > 0.01:
+	if _command.move.length_squared() > MOVE_INPUT_EPSILON:
 		var yaw := atan2(_command.move.x, _command.move.z)
 		_model.rotation.y = lerp_angle(_model.rotation.y, yaw, clampf(_turn_rate * delta, 0.0, 1.0))
 	_model.animate(delta, clampf(horizontal.length() / _run_speed, 0.0, 1.0), is_on_floor(), velocity.y)
@@ -274,9 +366,12 @@ func _update_shadow() -> void:
 
 func _apply_form() -> void:
 	var coiled := is_coiled()
+	var has_blaster := _power.form == PowerState.Form.BLASTER
 	_apply_collider_height(_height_coiled if coiled else _height_small)
 	_model.set_coiled(coiled)
-	form_changed.emit(coiled)
+	_model.set_blaster(has_blaster)
+	blaster.set_armed(has_blaster)
+	form_changed.emit(_power.form)
 
 
 func _apply_collider_height(height: float) -> void:

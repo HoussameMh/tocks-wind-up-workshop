@@ -81,8 +81,9 @@ static func environment() -> Environment:
 	return _environment
 
 
-## The directional key light, far window fill and lamp pools.
-static func build_lights(parent: Node3D) -> void:
+## The directional key light, far window fill and lamp pools. lamp_z moves the lamps along the
+## course for levels of another length; empty keeps the default positions.
+static func build_lights(parent: Node3D, lamp_z: Array = []) -> void:
 	var key := DirectionalLight3D.new()
 	key.rotation_degrees = vector("lights", "key", "rotation")
 	key.light_color = color("lights", "key", "color")
@@ -97,7 +98,11 @@ static func build_lights(parent: Node3D) -> void:
 	# A far unshadowed omni rather than a second directional: see data_reference.md.
 	parent.add_child(omni("window_fill", vector("lights", "window_fill", "position")))
 	var lamp: Dictionary = group("lights", "lamp")
-	for position_values: Array in lamp["positions"]:
+	var lamp_positions: Array = lamp["positions"]
+	if not lamp_z.is_empty():
+		var first: Array = lamp_positions[0]
+		lamp_positions = lamp_z.map(func(z: float) -> Array: return [first[0], first[1], z])
+	for position_values: Array in lamp_positions:
 		var spot := SpotLight3D.new()
 		spot.position = Vector3(position_values[0], position_values[1], position_values[2])
 		spot.light_color = to_color(lamp["color"])

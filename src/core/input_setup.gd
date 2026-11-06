@@ -20,6 +20,7 @@ static func install() -> void:
 	_add("move_back", [_key(KEY_S), _key(KEY_DOWN), _axis(JOY_AXIS_LEFT_Y, 1.0)])
 	_add("jump", [_key(KEY_SPACE), _button(JOY_BUTTON_A)])
 	_add("run", [_key(KEY_SHIFT), _button(JOY_BUTTON_X)])
+	_add("fire", [_key(KEY_F), _mouse(MOUSE_BUTTON_LEFT), _button(JOY_BUTTON_RIGHT_SHOULDER), _button(JOY_BUTTON_B)])
 	_add("camera_left", [_key(KEY_Q), _axis(JOY_AXIS_RIGHT_X, -1.0)])
 	_add("camera_right", [_key(KEY_E), _axis(JOY_AXIS_RIGHT_X, 1.0)])
 	_add("camera_up", [_axis(JOY_AXIS_RIGHT_Y, -1.0)])
@@ -54,6 +55,13 @@ static func _key(code: Key) -> InputEvent:
 	var event := InputEventKey.new()
 	event.device = ALL_DEVICES
 	event.physical_keycode = code
+	return event
+
+
+static func _mouse(button: MouseButton) -> InputEvent:
+	var event := InputEventMouseButton.new()
+	event.device = ALL_DEVICES
+	event.button_index = button
 	return event
 
 

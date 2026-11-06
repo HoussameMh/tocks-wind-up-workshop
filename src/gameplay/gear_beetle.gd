@@ -1,5 +1,5 @@
 class_name GearBeetle
-extends Area3D
+extends EnemyBase
 ## Patrolling enemy. Tock stomps it from above; any other contact hurts Tock.
 
 signal stomped
@@ -15,9 +15,8 @@ var speed := 0.0
 var _a := Vector3.ZERO
 var _b := Vector3.ZERO
 var _travel := 0.0
-var _stomp_margin := 0.0
-var _touching: Player
-var _squashed := false
+var _speed_scale := 1.0
+var _bolt_score := 0
 var _gear: Node3D
 var _body: Node3D
 
@@ -27,71 +26,50 @@ func setup(a: Vector3, b: Vector3, patrol_speed: float, tuning: Tuning) -> void:
 	_a = a
 	_b = b
 	speed = patrol_speed
-	_stomp_margin = tuning.num("enemy", "stomp_margin")
-	position = a
-	collision_layer = 0
-	collision_mask = Player.LAYER_PLAYER
-
+	_bolt_score = int(tuning.num("score", "bolt_gear"))
 	var width := tuning.num("enemy", "hitbox_width")
-	var height := tuning.num("enemy", "hitbox_height")
-	var shape := BoxShape3D.new()
-	shape.size = Vector3(width, height, width)
-	var collider := CollisionShape3D.new()
-	collider.shape = shape
-	collider.position.y = height * 0.5
-	add_child(collider)
+	_setup_base(tuning, a, Vector3(width, tuning.num("enemy", "hitbox_height"), width))
 	_build_model()
 
 
-func _ready() -> void:
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
-
-
-func _physics_process(delta: float) -> void:
-	if _squashed:
-		return
+func _enemy_tick(delta: float) -> void:
 	_gear.rotation.y += GEAR_SPIN * delta
 	var distance := _a.distance_to(_b)
 	if distance > 0.0 and speed > 0.0:
-		_travel += delta * speed / distance
+		_travel += delta * speed * _speed_scale / distance
 		var previous := position
 		position = _a.lerp(_b, pingpong(_travel, 1.0))
 		var step := position - previous
 		if step.length_squared() > 0.0:
 			var yaw := atan2(step.x, step.z)
 			_body.rotation.y = lerp_angle(_body.rotation.y, yaw, clampf(TURN_RATE * delta, 0.0, 1.0))
-	if _touching != null:
-		_resolve_contact(_touching)
 
 
-func _on_body_entered(body: Node3D) -> void:
-	if body is Player:
-		_touching = body
+func _on_stomped(player: Player) -> void:
+	_squash(player)
+	stomped.emit()
 
 
-func _on_body_exited(body: Node3D) -> void:
-	if body == _touching:
-		_touching = null
-
-
-func _resolve_contact(player: Player) -> void:
-	if StompRules.is_stomp(
-		player.global_position.y, player.fall_velocity_y, global_position.y, _stomp_margin
-	):
-		_squash(player)
-	else:
-		player.take_hit()
+func _on_bolted() -> void:
+	_defeat()
+	scored.emit(_bolt_score, "bolt_hit")
+	_play_knockout()
 
 
 func _squash(player: Player) -> void:
-	_squashed = true
-	_touching = null
-	set_deferred("monitoring", false)
+	_defeat()
 	player.bounce()
-	stomped.emit()
 	var tween := create_tween()
 	tween.tween_property(self, "scale", Vector3(1.3, 0.15, 1.3), 0.12)
+	tween.tween_interval(0.25)
+	tween.tween_callback(queue_free)
+
+
+## Flips onto its back with its legs in the air.
+func _play_knockout() -> void:
+	var tween := create_tween()
+	tween.tween_property(_body, "rotation:z", PI, 0.15)
+	tween.parallel().tween_property(_body, "position:y", 0.9, 0.15)
 	tween.tween_interval(0.25)
 	tween.tween_callback(queue_free)
 

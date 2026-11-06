@@ -5,7 +5,7 @@ extends SceneTree
 ## 3 watchdog expired (a test crashed or stalled, so the run is incomplete).
 
 const TEST_DIRS: Array[String] = ["res://tests/unit", "res://tests/integration"]
-const WATCHDOG_MSEC := 180000
+const WATCHDOG_MSEC := 480000
 
 var _started_msec := 0
 var _current_test := "startup"

@@ -5,6 +5,8 @@ extends CanvasLayer
 ## Implements the menu parts of design/art/art-bible.md section 6.
 
 signal start_requested
+signal next_requested
+signal retry_requested
 signal resume_requested
 signal title_requested
 signal quit_requested
@@ -108,13 +110,21 @@ func show_for(state: GameFlow.State, summary: String, score := -1) -> void:
 			])
 		GameFlow.State.GAME_OVER:
 			_present(tr("GAME OVER"), summary, score, title_requested.emit, tr("Title screen"), [
-				[tr("Try again"), start_requested.emit],
+				[tr("Retry level"), retry_requested.emit],
+				[tr("New run"), start_requested.emit],
 				[tr("Title screen"), title_requested.emit],
 			])
 			_confirm_allowed_msec = Time.get_ticks_msec() + CONFIRM_GRACE_MSEC
 		GameFlow.State.LEVEL_CLEAR:
-			_present(tr("WORKSHOP CLEARED"), summary, score, title_requested.emit, tr("Title screen"), [
-				[tr("Play again"), start_requested.emit],
+			_present(tr("LEVEL CLEARED"), summary, score, title_requested.emit, tr("Title screen"), [
+				[tr("Next level"), next_requested.emit],
+				[tr("Title screen"), title_requested.emit],
+			])
+			_confirm_allowed_msec = Time.get_ticks_msec() + CONFIRM_GRACE_MSEC
+			_start_score_tick()
+		GameFlow.State.VICTORY:
+			_present(tr("BARON SCRAPPED"), summary, score, title_requested.emit, tr("Title screen"), [
+				[tr("New run"), start_requested.emit],
 				[tr("Title screen"), title_requested.emit],
 			])
 			_confirm_allowed_msec = Time.get_ticks_msec() + CONFIRM_GRACE_MSEC
@@ -127,6 +137,11 @@ func show_for(state: GameFlow.State, summary: String, score := -1) -> void:
 ## The key names in the current menu hint row, such as "A" or "Enter".
 func hint_keys() -> Array[String]:
 	return _hints.keys()
+
+
+## The current menu's body text.
+func body_text() -> String:
+	return _body.text
 
 
 func _input(event: InputEvent) -> void:
@@ -159,7 +174,7 @@ func _present_title() -> void:
 	_vignette.visible = true
 	_column.alignment = BoxContainer.ALIGNMENT_BEGIN
 	_column.offset_top = TITLE_TOP
-	_show_menu(tr("Race the clock, stomp the gear-beetles and reach the Golden Key!"), -1, Callable(), "", [
+	_show_menu(tr("Four messy levels, one very rude vise. Stomp, shoot and run for the Golden Key!"), -1, Callable(), "", [
 		[tr("Start"), start_requested.emit],
 		_motion_entry(),
 		[tr("Quit"), quit_requested.emit],

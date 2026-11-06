@@ -16,7 +16,19 @@ const HINT_FADE_SECONDS := 1.0
 const LOW_TIME_SECONDS := 30
 const LOW_TIME_TICK_SCALE := 1.18
 const LOW_TIME_TICK_SECONDS := 0.2
+## How long the level banner stays up, and how long it fades.
+const BANNER_SECONDS := 2.5
+const BANNER_FADE_SECONDS := 0.5
+const BANNER_TOP := 84.0
+const GAUGE_TOP := 20.0
 
+var _banner: Label
+var _banner_tween: Tween
+var _power: Label
+var _boss_panel: CenterContainer
+var _boss_gauge: BossGauge
+var _can_fire := false
+var _seen_blaster := false
 var _settings: UiSettings
 var _cogs: Label
 var _cog_glyph: CogGlyph
@@ -64,6 +76,7 @@ func _ready() -> void:
 	cog_plaque.add_child(cog_row)
 	cog_row.add_child(_cog_glyph)
 	cog_row.add_child(_cogs)
+	_power = _add_plaque(row)
 
 	var spacer := Control.new()
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -90,6 +103,124 @@ func _ready() -> void:
 	hint_panel.add_child(_hints)
 	_hint_plaque.modulate.a = 0.0
 
+	var banner_row := CenterContainer.new()
+	banner_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(banner_row)
+	banner_row.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	banner_row.offset_top = BANNER_TOP
+	var banner_panel := PanelContainer.new()
+	banner_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner_panel.theme_type_variation = UiTheme.PANEL_PLAQUE
+	banner_row.add_child(banner_panel)
+	_banner = Label.new()
+	_banner.theme_type_variation = UiTheme.LABEL_HUD
+	banner_panel.add_child(_banner)
+	banner_row.modulate.a = 0.0
+
+	_boss_panel = CenterContainer.new()
+	_boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(_boss_panel)
+	_boss_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	_boss_panel.offset_top = GAUGE_TOP
+	var boss_plaque := PanelContainer.new()
+	boss_plaque.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	boss_plaque.theme_type_variation = UiTheme.PANEL_PLAQUE
+	_boss_panel.add_child(boss_plaque)
+	var boss_row := HBoxContainer.new()
+	boss_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	boss_row.add_theme_constant_override(&"separation", COG_GLYPH_SEPARATION)
+	boss_plaque.add_child(boss_row)
+	var boss_label := Label.new()
+	boss_label.theme_type_variation = UiTheme.LABEL_HUD
+	boss_label.text = tr("Baron Rust")
+	boss_row.add_child(boss_label)
+	_boss_gauge = BossGauge.new()
+	_boss_gauge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	boss_row.add_child(_boss_gauge)
+	_boss_panel.visible = false
+
+
+## Shows which form Tock is in, as words so color is never the only cue. Its controls follow.
+func set_form(form: PowerState.Form) -> void:
+	match form:
+		PowerState.Form.BLASTER:
+			_power.text = tr("Blaster")
+		PowerState.Form.COILED:
+			_power.text = tr("Coil")
+		_:
+			_power.text = tr("Small")
+	var can_fire := form == PowerState.Form.BLASTER
+	if can_fire == _can_fire:
+		return
+	_can_fire = can_fire
+	if _device != null:
+		_hints.show_play_hints(_device.kind, _can_fire)
+	# The first Blaster of a run re-shows the controls, so the player learns the Fire button.
+	if _can_fire and not _seen_blaster and visible:
+		_seen_blaster = true
+		show_hint()
+
+
+## A new run: the first Blaster will show the controls again.
+func new_run() -> void:
+	_seen_blaster = false
+
+
+## Shows which level this is for a moment.
+func show_level_banner(number: int, total: int, level_name: String) -> void:
+	show_caption(tr("Level %d of %d: %s") % [number, total, level_name])
+
+
+## Shows one line of text across the top for a moment. A new line replaces the last.
+func show_caption(text: String) -> void:
+	_banner.text = text
+	if _banner_tween != null:
+		_banner_tween.kill()
+	var row := _banner.get_parent().get_parent() as Control
+	row.modulate.a = 1.0
+	_banner_tween = create_tween()
+	_banner_tween.tween_interval(BANNER_SECONDS)
+	if _is_reduced_motion():
+		_banner_tween.tween_callback(func() -> void: row.modulate.a = 0.0)
+	else:
+		_banner_tween.tween_property(row, "modulate:a", 0.0, BANNER_FADE_SECONDS)
+
+
+## Shows the boss gauge. Only the boss level calls this.
+func set_boss_health(hp: int, max_hp: int) -> void:
+	_boss_panel.visible = true
+	_boss_gauge.set_health(hp, max_hp)
+
+
+## Hides the boss gauge.
+func hide_boss_health() -> void:
+	_boss_panel.visible = false
+
+
+## The power plaque's text.
+func power_text() -> String:
+	return _power.text
+
+
+## The banner's text.
+func banner_text() -> String:
+	return _banner.text
+
+
+## True while the banner can be seen.
+func banner_visible() -> bool:
+	return (_banner.get_parent().get_parent() as Control).modulate.a > 0.01
+
+
+## True while the boss gauge is up.
+func boss_gauge_visible() -> bool:
+	return _boss_panel.visible
+
+
+## Filled pips on the boss gauge.
+func boss_gauge_hp() -> int:
+	return _boss_gauge.hp
+
 
 ## Connects to a run. Call once after adding to the tree.
 func bind(run_state: RunState) -> void:
@@ -104,7 +235,7 @@ func bind_input(settings: UiSettings, device: InputDeviceTracker) -> void:
 	_settings = settings
 	_device = device
 	_device.device_changed.connect(_on_device_changed)
-	_hints.show_play_hints(_device.kind)
+	_hints.show_play_hints(_device.kind, _can_fire)
 
 
 ## Shows the controls for a few seconds at the start of a run.
@@ -120,6 +251,8 @@ func show_hint() -> void:
 ## Hides the play controls while a menu shows its own. The hint's timer keeps running.
 func set_menu_open(open: bool) -> void:
 	_hint_plaque.visible = not open
+	# A caption across the top would run into a menu's heading.
+	(_banner.get_parent().get_parent() as Control).visible = not open
 
 
 ## The key names in the control hint, such as "A" or "Space".
@@ -128,7 +261,7 @@ func hint_keys() -> Array[String]:
 
 
 func _on_device_changed(kind: InputDeviceTracker.Kind) -> void:
-	_hints.show_play_hints(kind)
+	_hints.show_play_hints(kind, _can_fire)
 	if visible:
 		show_hint()
 

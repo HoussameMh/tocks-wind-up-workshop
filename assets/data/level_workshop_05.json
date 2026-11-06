@@ -1,0 +1,62 @@
+{
+  "name": "Baron Rust's Vise",
+  "spawn": [0, 0.2, -3],
+  "time_seconds": 300,
+  "lamp_z": [-13],
+  "camera": { "pitch_degrees": 6, "focus_height": 3.2, "distance": 11 },
+  "quip_clear": "The workshop is safe. Baron Rust is now several smaller, quieter things.",
+  "quip_over": "Baron Rust is telling everyone about this.",
+  "boss": {
+    "key_pos": [0, 2.6, -13],
+    "key_area": [5, 4, 5],
+    "taunts": {
+      "droop": "Baron Rust: I meant to do that.",
+      "phase_2": "Baron Rust: The moustache?! Have some junk mail!",
+      "phase_3": "Baron Rust: I'm not rattling. YOU'RE rattling.",
+      "retry": "Baron Rust: Ha! Go on, wind yourself up and try again.",
+      "defeat": "Baron Rust: I seem to have... come unscrewed."
+    }
+  },
+  "palette": {
+    "oak": { "material": "bench_oak", "edge": "bench_edge", "kind": "bench" },
+    "base": { "material": "shelf_walnut", "edge": "bench_edge", "kind": "bench" },
+    "rail": { "material": "platform_steel", "edge": "steel_trim", "kind": "block" }
+  },
+  "platforms": [
+    { "center": [0, -1, -13], "size": [26, 2, 26], "color": "oak" },
+    { "center": [0, 2.5, -30], "size": [26, 7, 8], "color": "base" },
+    { "center": [-12.8, 0.6, -13], "size": [0.4, 1.2, 26], "color": "rail" },
+    { "center": [12.8, 0.6, -13], "size": [0.4, 1.2, 26], "color": "rail" },
+    { "center": [0, 0.6, -0.2], "size": [26, 1.2, 0.4], "color": "rail" }
+  ],
+  "arena_walls": [
+    { "center": [-13.2, 4, -13], "size": [0.4, 8, 26] },
+    { "center": [13.2, 4, -13], "size": [0.4, 8, 26] },
+    { "center": [0, 4, 0.2], "size": [26, 8, 0.4] },
+    { "center": [0, 12, -26.2], "size": [26, 14, 0.4] }
+  ],
+  "moving_platforms": [],
+  "blocks": [
+    { "pos": [-9, 2.7, -9], "kind": "coil", "rearm": true },
+    { "pos": [9, 2.7, -9], "kind": "bolt", "rearm": true }
+  ],
+  "beetles": [],
+  "cog_lines": [
+    { "from": [-11, 1, -6], "to": [-11, 1, -22], "count": 6 },
+    { "from": [11, 1, -6], "to": [11, 1, -22], "count": 6 }
+  ],
+  "cogs": [],
+  "springs": [],
+  "checkpoints": [],
+  "decor": [
+    { "type": "room", "min": [-24, -23, -60], "max": [65, 47, 24] },
+    { "type": "window", "pos": [64.8, 16, -18], "size": [30, 38] },
+    { "type": "counter", "x": [-24, -16], "top": -1, "floor": -23, "z": [24, -60] },
+    { "type": "pegboard", "x": -24, "y": [3, 34], "z": [23, -59] },
+    { "type": "batten", "y": 45.5, "z": -9, "width": 22 },
+    { "type": "wrench", "pos": [-23.2, 11, -14], "length": 8 },
+    { "type": "lamp", "pos": [-14, 24, -13], "base": [-20, -1, -13] },
+    { "type": "tool_chest", "pos": [44, -23, -18] },
+    { "type": "clock", "pos": [0, 20, -59.6], "radius": 8 }
+  ]
+}

@@ -1,11 +1,12 @@
 class_name Pickup
 extends Area3D
-## A collectible: "cog", "coil" (Coil Spring) or "life" (spare key).
+## A collectible: "cog", "coil" (Coil Spring), "bolt" (Bolt Blaster) or "life" (spare key).
 
 signal collected(kind: String, player: Player)
 
 const SPIN_RATE := 3.0
 static var _coil_mesh: ArrayMesh
+static var _bolt_mesh: ArrayMesh
 
 var kind := ""
 
@@ -27,6 +28,8 @@ func setup(pickup_kind: String, at: Vector3) -> void:
 			cog.visibility_range_end = Look.num("readability", "cog", "cull_distance")
 		"coil":
 			MeshKit.part(self, _get_coil_mesh(), "coil_metal", Vector3.ZERO, false)
+		"bolt":
+			MeshKit.part(self, _get_bolt_mesh(), "beetle_gear", Vector3.ZERO, false)
 		"life":
 			MeshKit.windup_key(self, "spare_key", 1.1, false)
 
@@ -40,7 +43,8 @@ func _process(delta: float) -> void:
 
 
 func _on_body_entered(body: Node3D) -> void:
-	if body is Player:
+	# A dead Tock collects nothing: the form table ignores every pickup while BROKEN.
+	if body is Player and (body as Player).alive:
 		collected.emit(kind, body as Player)
 		set_deferred("monitoring", false)
 		queue_free()
@@ -55,3 +59,15 @@ static func _get_coil_mesh() -> ArrayMesh:
 		batch.add_mesh(ring, Transform3D(Basis.IDENTITY, Vector3(0.0, -0.27 + i * 0.18, 0.0)))
 	_coil_mesh = batch.commit()
 	return _coil_mesh
+
+
+## A steel hex nut on a stubby barrel, deliberately unlike the round Coil Spring.
+static func _get_bolt_mesh() -> ArrayMesh:
+	if _bolt_mesh != null:
+		return _bolt_mesh
+	var axis_z := Basis(Vector3.RIGHT, PI / 2.0)
+	var batch := MeshBatch.new()
+	batch.add_mesh(MeshKit.cylinder(0.2, 0.2, 0.75, 10), Transform3D(axis_z, Vector3(0.0, 0.0, 0.1)))
+	batch.add_mesh(MeshKit.cylinder(0.46, 0.46, 0.24, 6), Transform3D(axis_z, Vector3(0.0, 0.0, -0.1)))
+	_bolt_mesh = batch.commit()
+	return _bolt_mesh
