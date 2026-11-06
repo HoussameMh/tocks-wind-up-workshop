@@ -1,0 +1,43 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #140d08; font-family: "Open Sans", sans-serif; }
+    .shot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .band { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 4; }
+    .scrim { position: absolute; inset: 0; background: linear-gradient(20deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .line { position: absolute; left: 192px; bottom: 124px; font-size: 84px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em; color: #fff3d6; filter: drop-shadow(0 5px 0 rgba(26,14,4,0.95)); white-space: nowrap; }
+    .line.big { font-size: 132px; }
+    .line.snug { font-size: 70px; }
+    .line.right { left: auto; right: 192px; }
+    .line.top { bottom: auto; top: 124px; }
+    .scrim.right { background: linear-gradient(-20deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .scrim.top { background: linear-gradient(160deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .who { display: block; font-size: 46px; margin-bottom: 8px; }
+    .w { display: inline-block; margin-right: 0.26em; }
+    .gold { background: linear-gradient(180deg,#ffe9a8 0%,#f2c04e 48%,#b97a16 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .dip { position: absolute; inset: 0; background: #0a0603; opacity: 0; }
+    .flood { position: absolute; inset: 0; background: linear-gradient(180deg,#ffe9a8 0%,#f2c04e 48%,#b97a16 100%); }
+    .endt { position: absolute; left: 150px; top: 190px; }
+    .endt .big { display: block; font-size: 190px; line-height: 1; font-weight: 800; filter: drop-shadow(0 8px 0 rgba(26,14,4,0.95)); }
+    .endt .big .w { margin-right: 0.22em; }
+    .endt .small { display: block; margin-top: 22px; font-size: 68px; font-weight: 700; color: #fff3d6; filter: drop-shadow(0 4px 0 rgba(26,14,4,0.95)); }
+    .logo-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,8,3,0.84) 0%, rgba(14,8,3,0.58) 34%, rgba(14,8,3,0) 62%); }
+  </style>
+  <div id="root" data-composition-id="endcard" data-start="0" data-duration="4.8" data-width="1920" data-height="1080">
+    <video id="endcard-v0" class="clip shot" src="assets/shots/endcard.mp4" muted playsinline data-start="0.00" data-duration="4.8" data-media-start="0" data-track-index="0" style="z-index:1"></video>
+
+    <div id="endcard-endc" class="clip band" data-start="0.3" data-duration="4.5" data-track-index="7" style="z-index:5">
+      <div id="endcard-scrim" class="logo-scrim"></div>
+      <div class="endt">
+        <span class="big"><span class="w gold">The</span><span class="w gold">End</span></span>
+        <span id="endcard-thanks" class="small">Thanks for playing</span>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#endcard-scrim", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.3);
+    tl.fromTo("#endcard-endc .big .w", { opacity: 0, y: 40, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.4, stagger: 0.16, ease: "back.out(1.5)" }, 0.45);
+    tl.fromTo("#endcard-thanks", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 1.25);
+    window.__timelines["endcard"] = tl;
+  </script>
+</template>

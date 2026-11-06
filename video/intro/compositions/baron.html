@@ -1,0 +1,38 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #140d08; font-family: "Open Sans", sans-serif; }
+    .shot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .band { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 4; }
+    .scrim { position: absolute; inset: 0; background: linear-gradient(20deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .line { position: absolute; left: 192px; bottom: 124px; font-size: 84px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em; color: #fff3d6; filter: drop-shadow(0 5px 0 rgba(26,14,4,0.95)); white-space: nowrap; }
+    .line.big { font-size: 132px; }
+    .line.snug { font-size: 70px; }
+    .line.right { left: auto; right: 192px; }
+    .line.top { bottom: auto; top: 124px; }
+    .scrim.right { background: linear-gradient(-20deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .scrim.top { background: linear-gradient(160deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .who { display: block; font-size: 46px; margin-bottom: 8px; }
+    .w { display: inline-block; margin-right: 0.26em; }
+    .gold { background: linear-gradient(180deg,#ffe9a8 0%,#f2c04e 48%,#b97a16 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .dip { position: absolute; inset: 0; background: #0a0603; opacity: 0; }
+    .flood { position: absolute; inset: 0; background: linear-gradient(180deg,#ffe9a8 0%,#f2c04e 48%,#b97a16 100%); }
+  </style>
+  <div id="root" data-composition-id="baron" data-start="0" data-duration="5.2" data-width="1920" data-height="1080">
+    <video id="baron-v0" class="clip shot" src="assets/shots/baron.mp4" muted playsinline data-start="0.00" data-duration="5.2" data-media-start="0" data-track-index="0" style="z-index:1"></video>
+    <div id="baron-line0" class="clip band" data-start="2.6" data-duration="2.50" data-track-index="5">
+      <div id="baron-fade0" class="band">
+        <div class="scrim"></div>
+        <div class="line"><span class="w">Nobody</span><span class="w">ever</span><span class="w">wound</span><span class="w gold">Baron</span><span class="w gold">Rust</span></div>
+      </div>
+    </div>
+    <div id="baron-dipc" class="clip band" data-start="4.80" data-duration="0.4" data-track-index="10" style="z-index:9"><div id="baron-dip" class="dip"></div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#baron-fade0", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, 2.6);
+    tl.fromTo("#baron-line0 .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.14, stagger: 0.08, ease: "power4.out" }, 2.6);
+    tl.to("#baron-fade0", { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 4.86);
+    tl.fromTo("#baron-dip", { opacity: 0 }, { opacity: 0.45, duration: 0.36, ease: "power2.in" }, 4.80);
+    window.__timelines["baron"] = tl;
+  </script>
+</template>

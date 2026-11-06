@@ -1,0 +1,9 @@
+# Large and rebuildable: see README.md. The game itself uses assets/video/*.ogv, which are committed.
+.hyperframes/
+.media/
+.thumbnails/
+.waveform-cache/
+renders/
+node_modules/
+*/assets/shots/
+tocks_workshop_*.mp4

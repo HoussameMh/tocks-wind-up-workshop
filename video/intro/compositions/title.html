@@ -1,0 +1,47 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #140d08; font-family: "Open Sans", sans-serif; }
+    .shot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .band { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 4; }
+    .scrim { position: absolute; inset: 0; background: linear-gradient(20deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .line { position: absolute; left: 192px; bottom: 124px; font-size: 84px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em; color: #fff3d6; filter: drop-shadow(0 5px 0 rgba(26,14,4,0.95)); white-space: nowrap; }
+    .line.big { font-size: 132px; }
+    .line.snug { font-size: 70px; }
+    .line.right { left: auto; right: 192px; }
+    .line.top { bottom: auto; top: 124px; }
+    .scrim.right { background: linear-gradient(-20deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .scrim.top { background: linear-gradient(160deg, rgba(14,8,3,0.82) 0%, rgba(14,8,3,0.42) 26%, rgba(14,8,3,0) 52%); }
+    .who { display: block; font-size: 46px; margin-bottom: 8px; }
+    .w { display: inline-block; margin-right: 0.26em; }
+    .gold { background: linear-gradient(180deg,#ffe9a8 0%,#f2c04e 48%,#b97a16 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .dip { position: absolute; inset: 0; background: #0a0603; opacity: 0; }
+    .flood { position: absolute; inset: 0; background: linear-gradient(180deg,#ffe9a8 0%,#f2c04e 48%,#b97a16 100%); }
+    .logo { position: absolute; left: 150px; top: 120px; font-weight: 800; letter-spacing: 0.015em; filter: drop-shadow(0 7px 0 rgba(26,14,4,0.95)); }
+    .logo .row { display: block; line-height: 1.04; white-space: nowrap; }
+    .logo .c { display: inline-block; background: linear-gradient(180deg,#ffe9a8 0%,#f2c04e 48%,#b97a16 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .logo .r1 { font-size: 112px; } .logo .r2, .logo .r3 { font-size: 146px; }
+    .logo svg { display: inline-block; width: 92px; height: 92px; vertical-align: -6px; margin: 0 2px; }
+    .logo-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,8,3,0.84) 0%, rgba(14,8,3,0.58) 34%, rgba(14,8,3,0) 62%); }
+  </style>
+  <div id="root" data-composition-id="title" data-start="0" data-duration="4.6" data-width="1920" data-height="1080">
+    <video id="title-v0" class="clip shot" src="assets/shots/title.mp4" muted playsinline data-start="0.00" data-duration="4.6" data-media-start="0" data-track-index="0" style="z-index:1"></video>
+
+    <div id="title-logoc" class="clip band" data-start="0.5" data-duration="4.1" data-track-index="7" style="z-index:5">
+      <div id="title-scrim" class="logo-scrim"></div>
+      <div class="logo">
+        <span class="row r1"><span class="c">T</span><svg id="title-cog" viewBox="0 0 100 100"><defs><linearGradient id="brass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset="0.5" stop-color="#f2c04e"/><stop offset="1" stop-color="#b97a16"/></linearGradient></defs><path d="M88.44 43.42L99.72 44.67L99.72 55.33L88.44 56.58L84.97 67.27L93.35 74.91L87.09 83.53L77.23 77.92L68.14 84.52L70.43 95.63L60.29 98.93L55.62 88.59L44.38 88.59L39.71 98.93L29.57 95.63L31.86 84.52L22.77 77.92L12.91 83.53L6.65 74.91L15.03 67.27L11.56 56.58L0.28 55.33L0.28 44.67L11.56 43.42L15.03 32.73L6.65 25.09L12.91 16.47L22.77 22.08L31.86 15.48L29.57 4.37L39.71 1.07L44.38 11.41L55.62 11.41L60.29 1.07L70.43 4.37L68.14 15.48L77.23 22.08L87.09 16.47L93.35 25.09L84.97 32.73Z M66 50 A16 16 0 1 0 34 50 A16 16 0 1 0 66 50Z" fill="url(#brass)" fill-rule="evenodd"/></svg><span class="c">C</span><span class="c">K</span><span class="c">'</span><span class="c">S</span></span>
+        <span class="row r2"><span class="c">W</span><span class="c">I</span><span class="c">N</span><span class="c">D</span><span class="c">-</span><span class="c">U</span><span class="c">P</span></span>
+        <span class="row r3"><span class="c">W</span><span class="c">O</span><span class="c">R</span><span class="c">K</span><span class="c">S</span><span class="c">H</span><span class="c">O</span><span class="c">P</span></span>
+      </div>
+    </div>
+    <div id="title-floodc" class="clip band" data-start="0" data-duration="0.5" data-track-index="9" style="z-index:8"><div id="title-flood" class="flood"></div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#title-flood", { clipPath: "circle(120% at 64% 58%)" }, { clipPath: "circle(0% at 64% 58%)", duration: 0.42, ease: "power3.inOut" }, 0.02);
+    tl.fromTo("#title-scrim", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.5);
+    tl.fromTo("#title-logoc .c", { opacity: 0.0, y: 34, filter: "blur(5px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.26, stagger: 0.028, ease: "back.out(1.5)" }, 0.55);
+    tl.fromTo("#title-cog", { opacity: 0, rotation: -200, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, rotation: 0, scale: 1, duration: 0.7, ease: "back.out(1.3)" }, 0.6);
+    window.__timelines["title"] = tl;
+  </script>
+</template>

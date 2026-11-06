@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #140d08; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30.20" data-width="1920" data-height="1080">
+      <div id="heap" data-composition-id="heap" data-composition-src="compositions/heap.html" data-start="0.00" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:1"></div>
+      <div id="hat" data-composition-id="hat" data-composition-src="compositions/hat.html" data-start="4.20" data-duration="3.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:2"></div>
+      <div id="rewind" data-composition-id="rewind" data-composition-src="compositions/rewind.html" data-start="7.80" data-duration="4.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:3"></div>
+      <div id="wake" data-composition-id="wake" data-composition-src="compositions/wake.html" data-start="12.40" data-duration="6.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:4"></div>
+      <div id="even_him" data-composition-id="even_him" data-composition-src="compositions/even_him.html" data-start="18.60" data-duration="6.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:5"></div>
+      <div id="endcard" data-composition-id="endcard" data-composition-src="compositions/endcard.html" data-start="25.40" data-duration="4.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:6"></div>
+      <audio id="sfx-0-boss_down" class="clip" src="assets/sfx/boss_down.wav" data-start="0.2" data-duration="1.70" data-track-index="20" data-volume="1.55"></audio>
+      <audio id="sfx-1-armor_clang" class="clip" src="assets/sfx/armor_clang.wav" data-start="3.1" data-duration="0.24" data-track-index="21" data-volume="1.55"></audio>
+      <audio id="sfx-2-thud" class="clip" src="assets/sfx/thud.wav" data-start="5.4" data-duration="0.08" data-track-index="22" data-volume="1.55"></audio>
+      <audio id="sfx-3-jump" class="clip" src="assets/sfx/jump.wav" data-start="5.5" data-duration="0.13" data-track-index="23" data-volume="1.55"></audio>
+      <audio id="sfx-4-jump" class="clip" src="assets/sfx/jump.wav" data-start="9.35" data-duration="0.13" data-track-index="20" data-volume="1.55"></audio>
+      <audio id="sfx-5-reveal" class="clip" src="assets/sfx/reveal.wav" data-start="9.7" data-duration="0.18" data-track-index="21" data-volume="1.55"></audio>
+      <audio id="sfx-6-power" class="clip" src="assets/sfx/power.wav" data-start="9.95" data-duration="0.37" data-track-index="22" data-volume="1.55"></audio>
+      <audio id="sfx-7-win" class="clip" src="assets/sfx/win.wav" data-start="12.75" data-duration="0.98" data-track-index="23" data-volume="1.55"></audio>
+      <audio id="sfx-8-duck_squeak" class="clip" src="assets/sfx/duck_squeak.wav" data-start="13.7" data-duration="0.90" data-track-index="20" data-volume="1.55"></audio>
+      <audio id="sfx-9-teeth_chatter" class="clip" src="assets/sfx/teeth_chatter.wav" data-start="14.3" data-duration="0.24" data-track-index="21" data-volume="1.55"></audio>
+      <audio id="sfx-10-plane_fwip" class="clip" src="assets/sfx/plane_fwip.wav" data-start="15.1" data-duration="0.22" data-track-index="22" data-volume="1.55"></audio>
+      <audio id="sfx-11-teeth_chatter" class="clip" src="assets/sfx/teeth_chatter.wav" data-start="16.2" data-duration="0.24" data-track-index="23" data-volume="1.55"></audio>
+      <audio id="sfx-12-duck_raspberry" class="clip" src="assets/sfx/duck_raspberry.wav" data-start="17.1" data-duration="0.50" data-track-index="20" data-volume="1.55"></audio>
+      <audio id="sfx-13-bolt_clink" class="clip" src="assets/sfx/bolt_clink.wav" data-start="19.9" data-duration="0.04" data-track-index="21" data-volume="1.55"></audio>
+      <audio id="sfx-14-teeth_wind" class="clip" src="assets/sfx/teeth_wind.wav" data-start="20.35" data-duration="0.30" data-track-index="22" data-volume="1.55"></audio>
+      <audio id="sfx-15-boss_phase" class="clip" src="assets/sfx/boss_phase.wav" data-start="20.85" data-duration="0.60" data-track-index="23" data-volume="1.55"></audio>
+      <audio id="sfx-16-jump" class="clip" src="assets/sfx/jump.wav" data-start="22" data-duration="0.13" data-track-index="20" data-volume="1.55"></audio>
+      <audio id="sfx-17-clear" class="clip" src="assets/sfx/clear.wav" data-start="25.75" data-duration="0.76" data-track-index="21" data-volume="1.55"></audio>
+      <audio id="ticks" class="clip" src="assets/sfx/clockwork_ticks.wav" data-start="0" data-duration="30.20" data-track-index="30" data-volume="0.66"></audio>
+    </div>
+    <script>
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

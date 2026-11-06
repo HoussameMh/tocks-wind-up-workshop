@@ -9,7 +9,14 @@ const GAME_OVER_SATURATION := 0.35
 const GAME_OVER_FADE_SECONDS := 0.4
 ## The ordered list of level files.
 const CAMPAIGN_PATH := "res://assets/data/level_campaign.json"
+## Played on launch, and after the last level's key. Made in video/.
+const INTRO_FILM := "res://assets/video/tocks_workshop_intro.ogv"
+const OUTRO_FILM := "res://assets/video/tocks_workshop_outro.ogv"
 
+## Set false before adding to the tree to run without the films: tests and tools do. They are off by
+## default with no display, where there is nobody to watch.
+var films_enabled := DisplayServer.get_name() != "headless"
+var film: FilmPlayer
 ## Which entry of the campaign is being played, from 0.
 var level_index := 0
 var tuning: Tuning
@@ -72,9 +79,17 @@ func _ready() -> void:
 	screens.quit_requested.connect(func() -> void: get_tree().quit())
 	screens.reduced_motion_toggle_requested.connect(ui_settings.toggle_reduced_motion)
 
+	# Added last, so it hears input first and nothing behind a film reacts.
+	film = FilmPlayer.new()
+	add_child(film)
+
 	_build_world()
 	_enter_title_view()
-	screens.show_for(flow.state, "")
+	var show_title := func() -> void: screens.show_for(flow.state, "")
+	if _films_wanted():
+		_play_film(INTRO_FILM, show_title)
+	else:
+		show_title.call()
 
 
 func _exit_tree() -> void:
@@ -94,6 +109,24 @@ func _unhandled_input(event: InputEvent) -> void:
 		flow.fire(GameFlow.Trigger.PAUSE)
 	elif flow.state == GameFlow.State.PAUSED:
 		flow.fire(GameFlow.Trigger.RESUME)
+
+
+## A film is a lot of motion to force on a player who asked for less, so reduced motion skips it.
+func _films_wanted() -> bool:
+	return films_enabled and not ui_settings.reduced_motion
+
+
+## Plays a film over a stopped world, with no 3D drawn behind it, then carries on.
+func _play_film(path: String, then: Callable) -> void:
+	get_tree().paused = true
+	get_viewport().disable_3d = true
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+	film.play(path, func() -> void:
+		get_tree().paused = false
+		get_viewport().disable_3d = false
+		_update_mouse_mode()
+		then.call()
+	)
 
 
 ## Starts a fresh run at level one, from the title, pause or end screens.
@@ -305,7 +338,7 @@ func _result_score(state: GameFlow.State) -> int:
 
 ## Pauses rather than letting the clock run down with nothing in the player's hands.
 func _on_gamepad_lost() -> void:
-	if not _camera_follows_sticks(flow.state):
+	if not _camera_follows_sticks(flow.state) or film.is_playing():
 		return
 	_gamepad_lost = true
 	flow.fire(GameFlow.Trigger.PAUSE)
@@ -339,15 +372,22 @@ func _on_checkpoint_reached(respawn_at: Vector3) -> void:
 ## The last level's key ends the run; any other key ends the level.
 func _on_goal_reached() -> void:
 	# The key's area spins, so it can sweep over a Tock who has just died.
-	if flow.state != GameFlow.State.PLAYING:
+	if flow.state != GameFlow.State.PLAYING or film.is_playing():
 		return
 	run_state.bank_time_bonus()
 	if level_index >= campaign_size() - 1:
 		run_state.bank_victory_bonus()
-		if flow.fire(GameFlow.Trigger.WIN):
-			sfx.play("win")
+		if _films_wanted():
+			_play_film(OUTRO_FILM, _win)
+		else:
+			_win()
 	elif flow.fire(GameFlow.Trigger.CLEAR):
 		sfx.play("clear")
+
+
+func _win() -> void:
+	if flow.fire(GameFlow.Trigger.WIN):
+		sfx.play("win")
 
 
 func _on_player_died() -> void:

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #140d08; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="39.50" data-width="1920" data-height="1080">
+      <div id="dusk" data-composition-id="dusk" data-composition-src="compositions/dusk.html" data-start="0.00" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:1"></div>
+      <div id="key" data-composition-id="key" data-composition-src="compositions/key.html" data-start="4.20" data-duration="4.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:2"></div>
+      <div id="baron" data-composition-id="baron" data-composition-src="compositions/baron.html" data-start="8.80" data-duration="5.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:3"></div>
+      <div id="snatch" data-composition-id="snatch" data-composition-src="compositions/snatch.html" data-start="14.00" data-duration="4.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:4"></div>
+      <div id="winddown" data-composition-id="winddown" data-composition-src="compositions/winddown.html" data-start="18.80" data-duration="8.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:5"></div>
+      <div id="run" data-composition-id="run" data-composition-src="compositions/run.html" data-start="27.00" data-duration="7.9" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:6"></div>
+      <div id="title" data-composition-id="title" data-composition-src="compositions/title.html" data-start="34.90" data-duration="4.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:7"></div>
+      <audio id="sfx-0-jump" class="clip" src="assets/sfx/jump.wav" data-start="2.3" data-duration="0.13" data-track-index="20" data-volume="2.6"></audio>
+      <audio id="sfx-1-reveal" class="clip" src="assets/sfx/reveal.wav" data-start="4.35" data-duration="0.18" data-track-index="21" data-volume="2.6"></audio>
+      <audio id="sfx-2-boss_grumble" class="clip" src="assets/sfx/boss_grumble.wav" data-start="10.65" data-duration="0.70" data-track-index="22" data-volume="2.6"></audio>
+      <audio id="sfx-3-armor_clang" class="clip" src="assets/sfx/armor_clang.wav" data-start="12.4" data-duration="0.24" data-track-index="23" data-volume="2.6"></audio>
+      <audio id="sfx-4-spring" class="clip" src="assets/sfx/spring.wav" data-start="14.92" data-duration="0.22" data-track-index="20" data-volume="2.6"></audio>
+      <audio id="sfx-5-crate" class="clip" src="assets/sfx/crate.wav" data-start="15.22" data-duration="0.16" data-track-index="21" data-volume="2.6"></audio>
+      <audio id="sfx-6-boss_grumble" class="clip" src="assets/sfx/boss_grumble.wav" data-start="16.7" data-duration="0.70" data-track-index="22" data-volume="2.6"></audio>
+      <audio id="sfx-7-boss_droop" class="clip" src="assets/sfx/boss_droop.wav" data-start="21.3" data-duration="0.70" data-track-index="23" data-volume="2.6"></audio>
+      <audio id="sfx-8-bolt_clink" class="clip" src="assets/sfx/bolt_clink.wav" data-start="24" data-duration="0.04" data-track-index="20" data-volume="2.6"></audio>
+      <audio id="sfx-9-jump" class="clip" src="assets/sfx/jump.wav" data-start="24.45" data-duration="0.13" data-track-index="21" data-volume="2.6"></audio>
+      <audio id="sfx-10-teeth_wind" class="clip" src="assets/sfx/teeth_wind.wav" data-start="26.1" data-duration="0.30" data-track-index="22" data-volume="2.6"></audio>
+      <audio id="sfx-11-stomp" class="clip" src="assets/sfx/stomp.wav" data-start="27.65" data-duration="0.13" data-track-index="23" data-volume="2.6"></audio>
+      <audio id="sfx-12-jump" class="clip" src="assets/sfx/jump.wav" data-start="28.45" data-duration="0.13" data-track-index="20" data-volume="2.6"></audio>
+      <audio id="sfx-13-paint_sloop" class="clip" src="assets/sfx/paint_sloop.wav" data-start="29.8" data-duration="0.22" data-track-index="21" data-volume="2.6"></audio>
+      <audio id="sfx-14-wrench_clank" class="clip" src="assets/sfx/wrench_clank.wav" data-start="31.05" data-duration="0.13" data-track-index="22" data-volume="2.6"></audio>
+      <audio id="sfx-15-bolt_fire" class="clip" src="assets/sfx/bolt_fire.wav" data-start="32.3" data-duration="0.11" data-track-index="23" data-volume="2.6"></audio>
+      <audio id="sfx-16-bolt_hit" class="clip" src="assets/sfx/bolt_hit.wav" data-start="32.7" data-duration="0.07" data-track-index="20" data-volume="2.6"></audio>
+      <audio id="sfx-17-boss_slam" class="clip" src="assets/sfx/boss_slam.wav" data-start="33.2" data-duration="0.40" data-track-index="21" data-volume="2.6"></audio>
+      <audio id="sfx-18-jump" class="clip" src="assets/sfx/jump.wav" data-start="34.15" data-duration="0.13" data-track-index="22" data-volume="2.6"></audio>
+      <audio id="sfx-19-clear" class="clip" src="assets/sfx/clear.wav" data-start="35.45" data-duration="0.76" data-track-index="23" data-volume="2.6"></audio>
+      <audio id="ticks" class="clip" src="assets/sfx/clockwork_ticks.wav" data-start="0" data-duration="39.50" data-track-index="30" data-volume="1.1"></audio>
+    </div>
+    <script>
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

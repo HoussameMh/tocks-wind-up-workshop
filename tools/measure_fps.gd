@@ -28,6 +28,7 @@ func _run() -> void:
 	])
 	Engine.max_fps = 0
 	_main = (load(TestKit.MAIN_SCENE) as PackedScene).instantiate()
+	_main.films_enabled = false
 	root.add_child(_main)
 	await _frames(30)
 	print("title, vsync on                   %5.1f fps" % await _count_fps())

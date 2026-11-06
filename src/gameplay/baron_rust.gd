@@ -60,7 +60,9 @@ const NECK_ANCHOR := Vector3(0.0, 9.6, -27.4)
 const NECK_RINGS := 12
 ## How far his body drops onto the bench, from where it stands.
 const COLLAPSE_DROP := -2.2
-const HEAD_HEAP := Vector3(2.2, 7.3, -27.8)
+const HEAD_HEAP := Vector3(2.2, 7.95, -27.8)
+## A neck shorter than this stays inside his chest, where its rings would poke through.
+const NECK_MIN_SHOWN := 2.5
 const HAT_CROOKED := 0.35
 
 ## The weak spot, as a bolt sees it. In the target group only while exposed.
@@ -565,6 +567,7 @@ func _stretch_neck() -> void:
 	var from := _neck.position
 	var to := _head.position
 	var gap := to - from
+	_neck.visible = gap.length() > NECK_MIN_SHOWN
 	_neck.scale = Vector3(1.0, maxf(gap.length(), 0.1), 1.0)
 	if gap.length_squared() > 0.001:
 		var up := gap.normalized()

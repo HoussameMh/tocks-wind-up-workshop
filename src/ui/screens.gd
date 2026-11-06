@@ -139,6 +139,11 @@ func hint_keys() -> Array[String]:
 	return _hints.keys()
 
 
+## True while a menu with buttons is up.
+func menu_open() -> bool:
+	return _root.visible and _buttons.get_child_count() > 0
+
+
 ## The current menu's body text.
 func body_text() -> String:
 	return _body.text

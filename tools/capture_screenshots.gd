@@ -15,6 +15,7 @@ func _initialize() -> void:
 func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
 	_main = (load(TestKit.MAIN_SCENE) as PackedScene).instantiate()
+	_main.films_enabled = false
 	root.add_child(_main)
 	await _frames(30)
 	await _shot("01_title")
