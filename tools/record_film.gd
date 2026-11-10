@@ -664,6 +664,32 @@ func shot_even_him() -> void:
 	)
 
 
+## One still of Tock's face and key for the game icon. Crop the centre square.
+func shot_icon() -> void:
+	await _stage(0, true)
+	_hide_cogs()
+	await _play(2.0 / FPS, func(_t: float) -> void:
+		var yaw := TITLE_YAW - 0.35
+		_look(SPOT_BENCH + Vector3(0.0, 0.95, 2.05).rotated(Vector3.UP, yaw), SPOT_BENCH + Vector3.UP * 0.7, 30.0)
+		_stand_legs()
+		_pose(SPOT_BENCH, yaw - 0.5, 0.0, 1.0, 0.0, 0.0)
+		_model()._right_arm.rotation.z = 2.35
+	)
+
+
+## One wide still of Tock on the bench with the course behind, for the store cover.
+func shot_cover() -> void:
+	await _stage(1, true)
+	_hide_cogs()
+	await _play(2.0 / FPS, func(_t: float) -> void:
+		var yaw := 0.55
+		_look(SPOT_BENCH + Vector3(0.0, 1.5, 4.6).rotated(Vector3.UP, yaw), SPOT_BENCH + Vector3(0.0, 1.3, -6.0), 44.0, -0.9)
+		_stand_legs()
+		_pose(SPOT_BENCH, yaw - 0.4, 0.0, 1.0, 0.0, 0.0)
+		_model()._right_arm.rotation.z = 2.35
+	)
+
+
 func shot_endcard() -> void:
 	await _stage(0, true)
 	_hide_cogs()

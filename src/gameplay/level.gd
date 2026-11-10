@@ -18,6 +18,8 @@ signal enemy_scored(points: int, sound: String)
 ## An enemy wants a sound played, such as a telegraph.
 signal enemy_sound(sound: String)
 signal blaster_collected
+## A golden gear was touched. ghost is true for one banked on an earlier clear.
+signal golden_gear_collected(index: int, ghost: bool, at: Vector3)
 
 const DEFAULT_PATH := "res://assets/data/level_workshop_01.json"
 const REWARD_RISE_SECONDS := 0.2
@@ -45,6 +47,10 @@ var enemies: Array[EnemyBase] = []
 var shots: EnemyShotPool
 ## The final boss, on the level that has one.
 var boss: BaronRust
+## This level's golden gears that are still out there.
+var golden_gears: Array[GoldenGear] = []
+## How many golden gears this level has, collected or not.
+var golden_gear_total := 0
 
 var _tuning: Tuning
 var _player: Player
@@ -121,6 +127,20 @@ func add_goal(at: Vector3, area_size: Vector3) -> CourseObjects.GoalKey:
 	goal.reached.connect(goal_reached.emit)
 	add_child(goal)
 	return goal
+
+
+## Places the level's golden gears. found lists the indices banked on earlier clears, which
+## appear as ghosts. design/release-spec.md section 3.
+func add_golden_gears(positions: Array, found: Array[int]) -> void:
+	golden_gear_total = positions.size()
+	for i in positions.size():
+		var gear := GoldenGear.new()
+		var at := _vec(positions[i])
+		gear.setup(i, at, found.has(i))
+		gear.collected.connect(func(index: int, ghost: bool) -> void: golden_gear_collected.emit(index, ghost, gear.global_position))
+		gear.tree_exiting.connect(func() -> void: golden_gears.erase(gear))
+		golden_gears.append(gear)
+		add_child(gear)
 
 
 ## Adds a toy box or crate from a level entry.

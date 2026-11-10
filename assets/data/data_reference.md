@@ -52,6 +52,7 @@ Distances are meters, speeds are meters per second and times are seconds.
 | `score` | `spare_power` | Points for a power-up that changes nothing |
 | `score` | `boss_stomp`, `boss_bolt`, `boss_defeat` | Points for hitting Baron Rust and for finishing him |
 | `score` | `per_life_at_win`, `no_rewind` | Paid at the end of the run: per life left, and once if no Game Over was ever retried |
+| `score` | `golden_gear` | Points for touching a golden gear, ghost or not: the value of 10 cogs, below the no-retry bonus. See `design/release-spec.md` section 4 |
 
 ## level_campaign.json
 
@@ -59,6 +60,7 @@ Distances are meters, speeds are meters per second and times are seconds.
 |---|---|
 | `levels` | The level files in play order. The last one's key wins the game |
 | `first_level_quip_clear`, `first_level_quip_over` | Level one's jokes, kept here because its level file does not change |
+| `golden_gears` | One list per level, in campaign order, of three `[x, y, z]` golden gear positions; an empty list for none. Kept here so level one's file does not change. Each must sit over a floor no more than 3 units below, outside solids and the Golden Key's trigger: `tests/integration/release_test.gd` checks this |
 
 ## level_workshop_01.json to level_workshop_05.json
 
@@ -105,6 +107,10 @@ Colors are `"#rrggbb"` text or `[r, g, b]` arrays; arrays may go above 1.0. Dist
 | `readability` | `blob`, `edge` | Landing blob `opacity`, `radius`, `beetle_radius` and `lift`; width of the strip along walkable edges |
 | `readability` | `cog`, `beetle`, `block` | `cull_distance` is how far from the camera they stop drawing. Beetle legs, gear and blob stop at `detail_cull_distance`. These keep draw calls within budget |
 | `readability` | `halo` | Soft additive billboard at the Golden Key, the cheap stand-in for glow |
+| `quality` | `low`, `high` | The graphics settings in Options: `msaa` samples (0, 2, 4 or 8), `glow` 1 or 0 (overrides `environment.glow`), directional `shadow_size`, and `effects_scale` for particles per burst. High measured about 28 FPS on the Intel HD 520, so that PC defaults to Low. See `design/release-spec.md` section 3 |
+| `effects` | `pool_size` | How many reusable emitters each burst kind has. More lets more bursts overlap |
+| `effects` | `spark`, `glint`, `dust` | One burst kind each: material `row`, particle `amount`, `lifetime` in seconds, `speed` range, quad `size`, `gravity`, cone `spread` in degrees and `color` |
+| `effects` | `landing` | `min_speed`: the fall speed in units per second at which a landing raises dust |
 | `scenery` | `zones` | `length` of a merge zone along z. Smaller culls better; larger makes fewer draw calls |
 | `scenery` | `twine`, `lead_screw`, `occlusion` | Twine `radius` and ceiling height `top_y`; how far the screw passes the plate's travel; strength and size of the fake shadow strips |
 | `scenery` | `window`, `toy_box`, `prop_colors` | Vertex colors for the window gradient, boxes and muted props |

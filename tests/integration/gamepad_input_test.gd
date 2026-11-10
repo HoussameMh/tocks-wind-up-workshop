@@ -518,9 +518,17 @@ func test_reduced_motion_stops_title_sway_and_can_be_turned_back_off(t: TestKit)
 	var position_a := main.camera.global_position
 	await t.wait_ticks(30)
 	t.is_true(main.camera.global_position.distance_to(position_a) > 0.001, "camera sways by default")
+	# Title: Start, Options, ... Options: Graphics, Fullscreen, Reduced motion, Back.
 	_tap(JOY_BUTTON_DPAD_DOWN)
 	await t.wait_ticks(1)
+	t.equal(_focused_text(main), main.tr("Options"), "Options is below Start")
+	_tap(JOY_BUTTON_A)
+	await t.wait_ticks(2)
+	for _i in 2:
+		_tap(JOY_BUTTON_DPAD_DOWN)
+		await t.wait_ticks(1)
 	var toggle := _focused(main) as Button
+	t.is_true(toggle.text.begins_with(main.tr("Reduced motion")), "D-pad reaches the motion toggle")
 	var text_before := toggle.text
 	_tap(JOY_BUTTON_A)
 	await t.wait_ticks(2)
@@ -536,6 +544,9 @@ func test_reduced_motion_stops_title_sway_and_can_be_turned_back_off(t: TestKit)
 	_tap(JOY_BUTTON_A)
 	await t.wait_ticks(2)
 	t.is_true(not main.ui_settings.reduced_motion, "A turns it back off")
+	_tap(JOY_BUTTON_B)
+	await t.wait_ticks(2)
+	t.equal(_focused_text(main), main.tr("Options"), "B goes back to the title, on Options")
 	if was_reduced:
 		main.ui_settings.toggle_reduced_motion()
 	await t.stop_game(main)

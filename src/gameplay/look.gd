@@ -18,6 +18,8 @@ static var _data: Dictionary = {}
 static var _materials: Dictionary = {}
 static var _environment: Environment
 static var _dot_tile: ImageTexture
+static var _soft_dot: GradientTexture2D
+const SOFT_DOT_SIZE := 32
 static var _diffuse_textures: Dictionary = {}
 
 
@@ -187,7 +189,26 @@ static func _build_material(entry: Dictionary) -> StandardMaterial3D:
 	if entry.get("generated", "") == "pegboard_dots":
 		built.albedo_texture = _get_dot_tile()
 		built.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	if entry.get("generated", "") == "soft_dot":
+		built.albedo_texture = _get_soft_dot()
 	return built
+
+
+## A round spot, white in the middle and clear at the edge, for particles.
+static func _get_soft_dot() -> GradientTexture2D:
+	if _soft_dot != null:
+		return _soft_dot
+	var gradient := Gradient.new()
+	gradient.set_color(0, Color(1.0, 1.0, 1.0, 1.0))
+	gradient.set_color(1, Color(1.0, 1.0, 1.0, 0.0))
+	_soft_dot = GradientTexture2D.new()
+	_soft_dot.gradient = gradient
+	_soft_dot.fill = GradientTexture2D.FILL_RADIAL
+	_soft_dot.fill_from = Vector2(0.5, 0.5)
+	_soft_dot.fill_to = Vector2(1.0, 0.5)
+	_soft_dot.width = SOFT_DOT_SIZE
+	_soft_dot.height = SOFT_DOT_SIZE
+	return _soft_dot
 
 
 static func _apply_maps(built: StandardMaterial3D, entry: Dictionary) -> void:

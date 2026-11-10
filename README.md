@@ -20,6 +20,8 @@ godot --path .
 
 If `godot` isn't recognized, use the full path to the Godot executable instead. You can also open `project.godot` in the Godot editor and press F5.
 
+To make a Windows or browser build, see the [deploy guide](docs/release/deploy-guide.md).
+
 ## Controls
 
 | Action | Keyboard and mouse | Gamepad (tested with simulated input only) |
@@ -54,6 +56,9 @@ If `godot` isn't recognized, use the full path to the Godot executable instead. 
 - **Campaign:** lives, cogs, score and your power carry between levels. A Game Over lets you retry the level, which is counted, or start a new run. Beating the Baron pays a bonus for lives left and a bigger one if you never retried.
 - **The workshop:** real wood, metal, plaster and concrete textures, warm lamp lighting, a dusk window, and a pegboard with hung tools. Tock and the beetles are well-made toy figures rather than photoreal characters, because everything is built in code without imported models.
 - **Game systems:** cogs, lives, score, a timer, a HUD, menus and sound effects generated in code.
+- **Replay value:** progress saves automatically. Clearing a level opens it in the level select, each level keeps its best time, and levels 1 to 4 each hide three golden gears. The title shows your best full-run score.
+- **Options:** Graphics Low or High (High adds smooth edges, glow and sharper shadows), Fullscreen (also F11) and Reduced motion. The game starts on Low on integrated Intel graphics and in the browser.
+- **Effects:** sparks when you stomp, a glint on every pickup and dust on hard landings.
 
 ## What we did
 
@@ -71,6 +76,7 @@ This game was built with [Claude Code](https://claude.com/claude-code), on top o
 10. **Tested the campaign.** Bots finish levels 2, 3 and 4, walking except for the run jumps, and making Tock slower or weaker on purpose makes them fail. Other bots beat the Baron with stomps alone, with bolts alone, and with no protection at all by dodging. In the final measurement on the Intel HD 520, after several back-to-back runs, every spot checked stayed above 60 FPS uncapped, with the lowest at 64, and a stress test of the busiest allowed scene held 66 FPS. An earlier run of that stress test on a hot, busy laptop dipped to about 55 FPS, so the worst moments may still drop slightly below 60 there.
 11. **Played it, then had the studio's specialists review it.** The level designer, art director and QA lead each reviewed the finished game. Their findings led to fixes for real bugs, such as a gamepad tap of B on an end screen throwing away the whole run, and a death during a phase break refilling too much of the Baron's health. They also led to fairer enemy placement, gentler timing on level 4's wrench relay, two extra checkpoints, and clearer colors, including a much bigger moustache.
 12. **Added an intro and an outro.** Claude Code wrote the story and directed the shots inside the real game engine, then cut them together with [HyperFrames](https://github.com/heygen-com/hyperframes), using the game's own sound effects. The films have no music yet. How to rebuild them is in [video/README.md](video/README.md). There are now 177 automated tests.
+13. **Made it ready to sell.** Following the [release spec](design/release-spec.md), Claude Code added saved progress, a level select, best times, golden gears, an options page with a graphics quality setting, particle effects, credits, a game icon and a store cover. It then built a Windows version and a browser version, and checked that both start and play the intro. The release notes for itch.io are in [docs/release](docs/release/deploy-guide.md). On the Intel HD 520, High quality runs at about 28 FPS, so that laptop stays on Low. There are now 195 automated tests.
 
 ## Project layout
 
@@ -80,6 +86,7 @@ This game was built with [Claude Code](https://claude.com/claude-code), on top o
 | `assets/` | Tuning data, level layouts, textures and the films |
 | `video/` | Sources for the intro and outro films |
 | `design/` | Game brief and design documents |
+| `docs/release/` | itch.io store text, cover, screenshots and deploy guide |
 | `tests/` | Unit and integration tests |
 | `tools/` | Screenshot, frame-rate and film-recording tools |
 | `.claude/` | Studio agents, skills, hooks and rules from the template |
@@ -101,7 +108,7 @@ The test run exits with 0 if everything passed, 1 on failures, 2 if no tests wer
 - Playtesting with people, then tuning difficulty from what they find
 - Testing on a real controller
 - Music
-- A standalone Windows build
+- Publishing on itch.io, following [the deploy guide](docs/release/deploy-guide.md)
 
 ## Credits and licenses
 

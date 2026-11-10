@@ -18,6 +18,9 @@ var time_left := 0.0
 var level_cogs := 0
 ## Times a Game Over was retried this run.
 var rewinds := 0
+## Seconds played on the current level, deaths included, until its key. Best times use this:
+## design/release-spec.md section 4.
+var level_elapsed := 0.0
 
 var _entry_cogs := 0
 var _entry_score := 0
@@ -66,6 +69,7 @@ func reset() -> void:
 func enter_level(seconds: float) -> void:
 	_level_seconds = seconds
 	level_cogs = 0
+	level_elapsed = 0.0
 	_entry_cogs = cogs
 	_entry_score = score
 	_time_banked = false
@@ -142,6 +146,7 @@ func restart_timer() -> void:
 func tick(delta: float) -> bool:
 	if time_left <= 0.0 or _time_banked:
 		return false
+	level_elapsed += delta
 	time_left = maxf(time_left - delta, 0.0)
 	_emit_time()
 	return time_left <= 0.0

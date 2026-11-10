@@ -25,6 +25,7 @@ const GAUGE_TOP := 20.0
 var _banner: Label
 var _banner_tween: Tween
 var _power: Label
+var _gears: Label
 var _boss_panel: CenterContainer
 var _boss_gauge: BossGauge
 var _can_fire := false
@@ -77,6 +78,8 @@ func _ready() -> void:
 	cog_row.add_child(_cog_glyph)
 	cog_row.add_child(_cogs)
 	_power = _add_plaque(row)
+	_gears = _add_plaque(row)
+	_gears.get_parent().visible = false
 
 	var spacer := Control.new()
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -190,6 +193,18 @@ func show_caption(text: String) -> void:
 func set_boss_health(hp: int, max_hp: int) -> void:
 	_boss_panel.visible = true
 	_boss_gauge.set_health(hp, max_hp)
+
+
+## Shows golden gears found on this level out of its total. A total of 0 hides the plaque.
+## design/release-spec.md section 3.
+func set_golden_gears(found: int, total: int) -> void:
+	_gears.get_parent().visible = total > 0
+	_gears.text = tr("Gold %d/%d") % [found, total]
+
+
+## The golden gear plaque's text, or empty while it is hidden.
+func golden_gear_text() -> String:
+	return _gears.text if (_gears.get_parent() as Control).visible else ""
 
 
 ## Hides the boss gauge.

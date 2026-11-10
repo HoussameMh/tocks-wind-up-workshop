@@ -181,6 +181,7 @@
     "boss_bolt": 300,
     "boss_defeat": 5000,
     "per_life_at_win": 1000,
-    "no_rewind": 5000
+    "no_rewind": 5000,
+    "golden_gear": 1000
   }
 }
