@@ -26,6 +26,9 @@ Everything here describes only what the game actually has.
 
 - **Cover** (630 by 500): `docs/release/cover.png`
 - **Screenshots**: the images in `docs/release/screenshots/`, in numbered order
+- **Trailer**: `docs/release/trailer/tocks-wind-up-workshop-trailer.mp4` (44 s). itch.io takes a
+  trailer only as a YouTube or Vimeo link, so upload the file there first (unlisted is fine), then
+  paste its link into the **Gameplay video or trailer** field.
 
 ## Description
 

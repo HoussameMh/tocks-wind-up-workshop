@@ -1,0 +1,14 @@
+Tock's Wind-Up Workshop trailer: third-party assets
+
+Characters, story and game: Tock's Wind-Up Workshop, the user's own original game.
+
+Samples (CC0 1.0): Versilian Community Sample Library (VCSL), Versilian Studios / Sam Gossner,
+  https://github.com/sgossner/VCSL (glockenspiel, xylophone, marimba, vibraphone, harp, tenor sax,
+  woodblock, claps, bass drum, cymbals)
+Music box and plucked bass: synthesised with physical models (pluck.py), no samples.
+Sound effects: synthesised in code (sfx.py and mix.py), no samples.
+
+HDRI "photo_studio_loft_hall", "american_walnut_veneer" textures and the "desk_lamp_arm_01" model:
+  Poly Haven (https://polyhaven.com), CC0 1.0.
+Font: Fredoka, SIL Open Font License 1.1.
+3D rendering: three.js (MIT).

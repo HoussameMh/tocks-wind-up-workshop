@@ -41,7 +41,8 @@ command does. The `builds/` folder is not committed to Git.
    - Upload `tocks-wind-up-workshop-windows.zip` and tick **Windows** for it.
 5. Under **Embed options**, set the viewport to **1280 by 720**, and tick **Fullscreen button**. The
    web build doesn't use threads, so leave **SharedArrayBuffer support** off.
-6. Add screenshots, set the price, and save as **Draft** first. Open the page, play the browser
+6. Add screenshots and the trailer link (see [itch-store-page.md](itch-store-page.md): the trailer has
+   to be on YouTube or Vimeo first), set the price, and save as **Draft** first. Open the page, play the browser
    version and download the Windows version before you make it **Public**.
 
 ## 3. Get paid
