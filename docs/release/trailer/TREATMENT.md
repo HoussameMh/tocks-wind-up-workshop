@@ -8,6 +8,11 @@ Everything shown is the user's own game, rebuilt in toy bricks: Tock (a clockwor
 cap, teal body, brass arms and a wind-up key), Baron Rust (a rusty bench vise with a tiny top hat
 and a moustache), the Golden Key, gear-beetles. No brick brand, no minifigure silhouette.
 
+**Revision (after the first cut):** the user asked for no music and sound effects only. The
+score is gone from the mix; the cue map below still sets the rhythm the cuts follow, and the
+foley, room tone and desk clock carry the sound. The silence before the turn now means the clock
+alone, after a stretch of busy foley.
+
 ## 1. Three structures
 
 1. **One long chase across the desk.** Tock runs the whole desk left to right, each region a level

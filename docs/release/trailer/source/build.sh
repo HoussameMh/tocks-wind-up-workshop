@@ -1,7 +1,8 @@
 #!/bin/sh
 # One command: the Brick Toy trailer for Tock's Wind-Up Workshop.
-#   sh films/tock-trailer/build.sh        score, events, mix, picture (24 fps), master at -14 LUFS, poster
-# Needs the core and music tiers (setup.sh deps music), the HDRI pack (tools/fetch.sh hdri) and VCSL (tools/fetch.sh instruments vcsl).
+#   sh films/tock-trailer/build.sh        events, sound effects mix, picture (24 fps), master, poster
+# Sound effects only, no music. Needs the core tier (setup.sh deps) and the HDRI pack (tools/fetch.sh hdri).
+# The master lands near -15 LUFS: effects alone are too spiky to reach -14 within a -1 dB true peak.
 set -e
 HERE=$(cd "$(dirname "$0")" && pwd)
 LIB=${LIB:-$(cd "$HERE/../.." && pwd)}
@@ -12,7 +13,6 @@ NAME=tocks-wind-up-workshop-trailer
 FPS=24
 cd "$LIB"
 mkdir -p "$HERE/out"
-"$PY" "$HERE/score.py"
 node core/render/events.mjs "$HERE"
 "$PY" "$HERE/mix.py"
 # One worker by default: with two on integrated graphics, one worker once lost the ruler's texture (it rendered dark).

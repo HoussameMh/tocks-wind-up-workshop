@@ -1,4 +1,4 @@
-# Mix: foley from events.json + the score + room tone and the desk clock → out/mix.wav. No voice in this film.
+# Mix: foley from events.json + room tone and the desk clock → out/mix.wav. No music and no voice in this film.
 import os, sys, json, numpy as np, soundfile as sf
 LIB = os.environ.get('LIB') or os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.insert(0, os.path.join(LIB, 'core', 'audio'))
@@ -67,9 +67,9 @@ for k in range(int(DUR)):
     tick = hp(noise(.02), 3000) * env_exp(.02, .002) * loud
     add(amb, tick, float(k), 1.0, .35)
 
-mus, sr = sf.read(os.path.join(HERE, 'out', 'score.wav'))
-mus = mus[:N] if len(mus) >= N else np.pad(mus, ((0, N - len(mus)), (0, 0)))
-mix = mus * .8 + fx * .9 + amb
+# No music: the user asked for sound effects only. The foley and the room carry the film.
+for c in range(2): fx[:, c] = compress(fx[:, c], .2, 3.0)   # tame the sharpest clicks so the film can reach -14 LUFS
+mix = (fx * .9 + amb) * 2.3   # about +7 dB into the limiter: effects alone are sparse and spiky, and the master needs peaks within 13 dB of the loudness
 for c in range(2): mix[:, c] = limit(mix[:, c], .95)
 sf.write(os.path.join(HERE, 'out', 'mix.wav'), mix.astype(np.float32), SR)
 print('mix peak', float(np.abs(mix).max()), 'rms', float(np.sqrt((mix ** 2).mean())))
